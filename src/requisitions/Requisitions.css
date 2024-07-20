@@ -1,0 +1,82 @@
+.input-styles{
+    margin-left: 20px;
+    width: 17vw;
+    /* background-color: red; */
+}
+.inputDate-styles{
+    width: 11.7vw;
+}
+.labelDate{
+    margin-left: 20px;
+}
+.labelStatus{
+    margin-left: 20px;
+}
+.labelPriority{
+    margin-left: 20px; 
+}
+.labelPositionType{
+    margin-left: 20px;  
+}
+.input-textarea{
+    margin-left: 20px;
+    width: 18vw;
+    margin-bottom: -15px;
+
+}
+.select-styles{
+    width: 15.6vw;
+    height: 40px;
+    
+}
+.selectPositionType-styles{
+    height: 40px;
+    width: 13vw;
+}
+.input-text{
+    margin-left: 20px;
+    width: 17vw;
+    /* background-color: red; */
+    margin-bottom: -14px;
+
+}
+.AddRequisition{
+    margin-left: 20px;
+}
+.findRequisitions{
+    margin-left: 20px;
+}
+.backButton{
+    margin-left: 30px;
+}
+.CreateRequisitions{
+    margin-left: 30px;
+}
+.headerRequisitions{
+    display: flex;
+    align-items: center;
+    justify-content: center; 
+}
+
+.requisition-table{
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    /* background-color: red; */
+}
+.requisition-table th,
+  .requisition-table td {
+    padding: 8px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+  }
+
+.requisition-table th {
+  background-color: #f2f2f2;
+  font-weight: bold;
+}
+.header{
+    display: flex;
+    align-items: center;
+    justify-content: center; 
+}
