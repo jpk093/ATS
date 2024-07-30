@@ -20,16 +20,19 @@ const Candidates = () => {
   const [editId, setEditId] = useState(null);
   const [showForm, setShowForm] = useState(false);
   const [showCandidates, setShowCandidates] = useState(false);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   const navigate = useNavigate();
 
   useEffect(() => {
     fetchCandidates();
-  }, []);
+  }, [page]);
 
   const fetchCandidates = async () => {
     try {
-      const response = await axios.get(`${appUrl}/candidates`);
-      setCandidates(response.data);
+      const response = await axios.get(`${appUrl}/candidates?page=${page}&limit=10`);
+      setCandidates(response.data.candidates); 
+      setTotalPages(Math.ceil(response.data.totalCount / 10));
     } catch (error) {
       console.error("Error fetching candidates:", error);
       alert("Failed to fetch candidates");
@@ -43,13 +46,13 @@ const Candidates = () => {
       [name]: value,
     });
   };
-//   const handleFileChange = (e) => {
-//     const file = e.target.files[0];
-//     setFormData({
-//       ...formData,
-//       Resume: file,
-//     });
-//   };
+  // const handleFileChange = (e) => {
+  //   const file = e.target.files[0];
+  //   setFormData({
+  //     ...formData,
+  //     Resume: file,
+  //   });
+  // };
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (isEditMode) {
@@ -57,7 +60,6 @@ const Candidates = () => {
     } else {
       try {
         const response = await axios.post(`${appUrl}/candidates`, formData);
-        console.log("Candidate created:", response.data);
         alert("Candidate created successfully");
         fetchCandidates();
         setFormData({
@@ -151,6 +153,9 @@ const Candidates = () => {
     setShowForm(false);
     fetchCandidates(); // Fetch all candidates
   };
+  const handlePageChange = (newPage) => {
+    setPage(newPage);
+  };
   return (
     <div>
       {showForm ? (
@@ -197,7 +202,7 @@ const Candidates = () => {
             />
             
             <input
-              type="file"
+              type="test"
               id="Resume"
               name="Resume"
               placeholder="Resume"
@@ -257,7 +262,7 @@ const Candidates = () => {
             Create Candidates
           </button>
 
-          <button onClick={handleFindAllCandidates} className="findCandidates">
+          <button onClick={ () => handleFindAllCandidates()} className="findCandidates">
             Find All Candidates
           </button>
         </div>
@@ -312,6 +317,21 @@ const Candidates = () => {
               ))}
             </tbody>
           </table>
+          <div>
+            <button
+              onClick={() => handlePageChange(page - 1)}
+              disabled={page === 1}
+            >
+              Previous
+            </button>
+            <span> Page {page} of {totalPages} </span>
+            <button
+              onClick={() => handlePageChange(page + 1)}
+              disabled={page === totalPages}
+            >
+              Next
+            </button>
+          </div>
         </div>
       )}
     </div>

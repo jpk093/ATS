@@ -2,9 +2,9 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { appUrl } from "../signUp/SignUp";
 import { useNavigate } from "react-router-dom";
-import "./Ats.css";
+import "./Jobs.css";
 
-const ATS = () => {
+const Jobs = () => {
   const [jobData, setJobData] = useState({
     JobTitle: "",
     Description: "",
@@ -24,10 +24,15 @@ const ATS = () => {
   const [showJobs, setShowJobs] = useState(false);
   const [editMode, setEditMode] = useState(false); // State to control if editing
   const [currentJobId, setCurrentJobId] = useState(null); // State to track job being edited
-  const [searchQuery, setSearchQuery] = useState(""); // State for search query
+  // const [searchQuery, setSearchQuery] = useState(""); // State for search query
   const [showSearch, setShowSearch] = useState(false); // State to control search input visibility
-  const [jobID, setJobID] = useState(""); // New state for JobID search
+  // const [jobID, setJobID] = useState(""); // New state for JobID search
   const navigate = useNavigate();
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
+  const [totalCount, setTotalCount] = useState(0);
+  const [loading, setLoading] = useState(true);
+
   //Handle input change
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -88,7 +93,7 @@ const ATS = () => {
             ClosingDate: "",
           });
           setShowForm(false);
-          handleFindAllJobs();
+          handleFindAllJobs(page);
         })
         .catch((error) => {
           console.error("Error creating job:", error);
@@ -97,17 +102,29 @@ const ATS = () => {
     }
   };
 
-  const handleFindAllJobs = () => {
+  const handleFindAllJobs = (currentPage = 1) => {
+    setLoading(true);
     axios
-      .get(`${appUrl}/jobs/all`)
+      .get(`${appUrl}/jobs/all`,{
+        params:{
+          page:currentPage,
+          limit:limit
+        }
+      })
       .then((response) => {
-        setJobs(response.data);
+        setJobs(response.data.jobs);
         setShowJobs(true);
+        setPage(currentPage);
+        setTotalCount(response.data.totalCount); // Update total jobs count
+        setLoading(false);
       })
       .catch((error) => {
         console.error("Error fetching jobs:", error);
+        setLoading(false);
       });
   };
+
+
   // Utility function to format dates
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -120,7 +137,7 @@ const ATS = () => {
         alert("Job updated successfully!");
         setShowForm(false);
         setEditMode(false);
-        handleFindAllJobs();
+        handleFindAllJobs(page);
       })
       .catch((error) => {
         console.error("Error updating jobs:", error);
@@ -161,31 +178,14 @@ const ATS = () => {
   const handleBack = () => {
     navigate("/dashboard"); // Adjust this route as needed
   };
-  const handleSearchChange = (e) => {
-    setSearchQuery(e.target.value);
-  };
-  const handleSearch = () => {
-    if(searchQuery.trim () === ""){
-      alert ("Please enter a search query.");
-      return;
+  // Handle pagination
+  const handlePageChange = (newPage) => {
+    if (newPage >= 1 && newPage <= totalPages) {
+      handleFindAllJobs(newPage);
     }
-    axios.get(`${appUrl}/jobs/search`,{
-      params:{
-        JobID:jobID,
-        searchValue:searchQuery,
-      },
-    })
-      .then((response) => {
-        console.log("Search Results:", response.data);
-        setJobs(response.data);
-        setShowJobs(true);
-        setShowSearch(false); // Hide search input after search
-      })
-      .catch((error) =>{
-        console.error("Error searching jobs:",error);
-        alert("Failed to search jobs.");
-      })
-  }
+  };
+  // Calculate total pages
+  const totalPages = Math.ceil(totalCount / limit);
   return (
     <div className="ats-container">
       <button onClick={handleBack} className="back-button">
@@ -200,26 +200,9 @@ const ATS = () => {
       >
         Add Job
       </button>
-      <button onClick={handleFindAllJobs} className="job-button">
+      <button onClick={() =>handleFindAllJobs(page)} className="job-button">
         Find All Job
       </button>
-      <button  onClick={() => setShowSearch(!showSearch)} className="job-button">
-        Search Job
-      </button>
-      {showSearch && (
-        <div className="search-container">
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={handleSearchChange}
-            placeholder="Search jobs..."
-            className="search-input"
-          />
-          <button onClick={handleSearch} className="search-button">
-            Search
-          </button>
-        </div>
-      )}
       {showForm && (
         <div>
           <h1 className="header">{editMode ? "Edit Job" : "Add New Job"}</h1>
@@ -347,10 +330,13 @@ const ATS = () => {
           </form>
         </div>
       )}
-
-      {jobs.length > 0 && showJobs && (
+      {loading ? (
+        <p></p>
+      ) : (
+      // {jobs.length > 0 && showJobs && (
+        showJobs && (
         <div>
-          <h1 className="title">{showSearch ? "Search Results" : "All Jobs"}</h1>
+          <h1 className="title">All Jobs</h1>
           <table className="job-table">
             <thead>
               <tr>
@@ -389,15 +375,13 @@ const ATS = () => {
                   <td>
                     <button
                       onClick={() => handleEditJob(job)}
-                      className="update-button"
+                      className="update-jobs-button"
                     >
                       Update
                     </button>
-                  </td>
-                  <td>
                     <button
                       onClick={() => handleDeleteJob(job.JobID)}
-                      className="delete-button"
+                      className="delete-jobs-button"
                     >
                       Delete{" "}
                     </button>
@@ -406,10 +390,26 @@ const ATS = () => {
               ))}
             </tbody>
           </table>
+          <div>
+            <button
+              onClick={() => handlePageChange(page - 1)}
+              disabled={page === 1}
+            >
+              Previous
+            </button>
+            <span> Page {page} of {totalPages} </span>
+            <button
+              onClick={() => handlePageChange(page + 1)}
+              disabled={page === totalPages}
+            >
+              Next
+            </button>
+          </div>
         </div>
+        )
       )}
     </div>
   );
 };
 
-export default ATS;
+export default Jobs;

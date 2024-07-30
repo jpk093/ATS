@@ -1,0 +1,44 @@
+.employeeHeader{
+    display: flex;
+    align-items: center;
+    justify-content: center; 
+}
+.employee-input-styles{
+    margin-left: 20px;
+    width: 16vw;
+}
+.employee-create-button{
+    margin-left: 20px;
+}
+.employee-find-button{
+    margin-left: 20px;
+}
+.employee-submit{
+    margin-left: 20px;
+}
+.employee-back-button{
+    margin-left: 20px;
+}
+.employee-cancel-button{
+    margin-left: 20px;
+}
+.employee-table{
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    /* background-color: red; */
+}
+.employee-table th,
+  .employee-table td {
+    padding: 8px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+  }
+
+.employee-table th {
+  background-color: #f2f2f2;
+  font-weight: bold;
+}
+.employee-delete-button{
+    margin-left: 20px;
+}

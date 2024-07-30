@@ -27,18 +27,21 @@ const Requisitions = () => {
   const [isEditMode, setIsEditMode] = useState(false);
   const [editId, setEditId] = useState(null);
   const [showRequisitions, setShowRequisitions] = useState(false); // New state to control requisitions table visibility
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   const navigate = useNavigate();
 
   //Fetch all requisitions on component mount
   useEffect(() => {
     fetchRequisitions();
-  }, []);
+  }, [page]);
 
   //Fetch all requisitions from backend
   const fetchRequisitions  = async () =>{
     try{
-      const response=await axios.get(`${appUrl}/requisitions`);
-      SetRequisitions(response.data);
+      const response=await axios.get(`${appUrl}/requisitions?page=${page}&limit=10`);
+      SetRequisitions(response.data.requisitions);
+      setTotalPages(Math.ceil(response.data.totalCount/10))
     }catch(error){
       console.error("Error fetching requisitions:",error);
       alert("Failed to fetch requisitions");
@@ -158,6 +161,9 @@ const Requisitions = () => {
     setEditId(requisition.RequisitionID);
     setShowForm(true);
     setShowRequisitions(false);
+  };
+  const handlePageChange = (newPage) => {
+    setPage(newPage);
   };
   return (
     <div>
@@ -347,7 +353,7 @@ const Requisitions = () => {
             onClick={handleFindAllRequisitions}
             className="findRequisitions"
           >
-            FindAll Requisitions
+            Find All Requisitions
           </button>
         </div>
       )}
@@ -396,15 +402,28 @@ const Requisitions = () => {
                   <td>{formatDate(requisition.ApprovalDate)}</td>
                   <td>{formatDate(requisition.ClosedDate)}</td>
                   <td>
-                    <button onClick={ () =>handleEditRequisitions(requisition) } className="update-button">Update</button>
-                  </td>
-                  <td>
-                    <button onClick={ () => handleDelete(requisition.RequisitionID)} className="delete-button">Delete</button>
+                    <button onClick={ () =>handleEditRequisitions(requisition) } className="update-requisition-button">Update</button>
+                    <button onClick={ () => handleDelete(requisition.RequisitionID)} className="delete-requisition-button">Delete</button>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
+          <div>
+            <button
+              onClick={() => handlePageChange(page - 1)}
+              disabled={page === 1}
+            >
+              Previous
+            </button>
+            <span> Page {page} of {totalPages} </span>
+            <button
+              onClick={() => handlePageChange(page + 1)}
+              disabled={page === totalPages}
+            >
+              Next
+            </button>
+          </div>
         </div>
       )}
     </div>

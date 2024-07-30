@@ -1,0 +1,69 @@
+.interview-back-button{
+    margin-left: 10px;
+}
+.interview-create-button{
+    margin-left: 20px;
+}
+.interview-find-button{
+    margin-left: 20px;
+}
+.interview-cancle-button{
+    margin-left: 20px;
+}
+.interviewHeader{
+    display: flex;
+    align-items: center;
+    justify-content: center; 
+}
+.interview-input-styles{
+    margin-left: 20px;
+    width: 16.2vw;
+}
+.interview-date-styles{
+    /* margin-left: 4px; */
+    width: 8.7vw;
+}
+.interview-time-styles{
+    width: 10.8vw; 
+}
+.interview-select-styles{
+    margin-left: 20px;
+    width: 17.6vw;
+    height: 35px;
+}
+.interview-submit{
+    margin-left: 20px;
+}
+.interview-labelDate{
+    margin-left: 20px;
+}
+.interview-ScheduledOn-labelDate{
+    margin-left: 20px;
+    width: 10vw;
+}
+.interview-Scheduled-styles{
+    width: 11vw;
+}
+.interview-table{
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    /* background-color: red; */
+}
+.interview-table th,
+  .interview-table td {
+    padding: 8px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+  }
+
+.interview-table th {
+  background-color: #f2f2f2;
+  font-weight: bold;
+}
+.update-interview-button{
+    margin-right: 90px;
+} 
+ .delete-interview-button{
+    margin-left: -79px;
+ }

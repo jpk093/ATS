@@ -1,0 +1,65 @@
+.backButtonSubmission{
+    margin-right: 20px;
+}
+.createSubmissions{
+    margin-right: 20px;
+}
+.submissionHeader{
+    display: flex;
+    align-items: center;
+    justify-content: center; 
+}
+.submission-input-styles{
+    margin-left: 20px;
+    width: 17vw;
+}
+.AddSubmission{
+    margin-left: 20px;
+    
+}
+.SubmittedDate{
+    margin-left: 20px;
+}
+.inputSubmissionDate-styles{
+    width: 10.9vw;
+}
+.submissionBtton{
+    margin-top: 20px;
+}
+.submission-input-textarea{
+    margin-left: 20px;
+    width: 18vw;
+    margin-bottom: -15px;
+}
+.submission-select-styles{
+    width: 15.6vw;
+    height: 40px;    
+}
+.handleSubmissions{
+    display: flex;
+    align-items: center;
+    justify-content: center; 
+}
+.submission-table{
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+.submission-table th,
+  .submission-table td {
+    padding: 8px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+    /* background-color: red; */
+  }
+
+.submission-table th {
+  background-color: #f2f2f2;
+  font-weight: bold;
+}
+.update-button-submission{
+    margin-right: 90px;
+} 
+ .delete-button-submission{
+    margin-left: -79px;
+ }

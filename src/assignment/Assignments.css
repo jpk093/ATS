@@ -1,0 +1,57 @@
+.assignment-create-button{
+    margin-left: 20px;
+}
+.assignment-find-button{
+    margin-left: 20px;
+}
+.assignmentHeader{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.assignment-input-styles{
+ margin-left: 20px;
+ width: 17vw;
+}
+.assignment-Date-styles{
+    /* margin-left: 20px; */
+    width: 13.3vw;
+}
+
+.assignment-select-styles{
+    margin-left: 20px;
+    width: 18.3vw;
+    height: 35px;
+}
+.assignment-submit{
+    margin-left: 20px;
+}
+.assignment-back-button{
+    margin-left: 20px;
+}
+.assignment-cancel-button{
+    margin-left: 20px;
+}
+.assignment-table{
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    /* background-color: red; */
+}
+.assignment-table th,
+  .assignment-table td {
+    padding: 8px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+  }
+
+.assignment-table th {
+  background-color: #f2f2f2;
+  font-weight: bold;
+}
+.assignment-edit-button{
+    margin-right: 90px;
+} 
+ .assignment-delete-button{
+    margin-left: -79px;
+ }

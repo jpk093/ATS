@@ -47,7 +47,7 @@
     margin-left: 20px;
 }
 .backButton{
-    margin-left: 30px;
+    margin-left: 10px;
 }
 .CreateRequisitions{
     margin-left: 30px;
@@ -80,3 +80,9 @@
     align-items: center;
     justify-content: center; 
 }
+.update-requisition-button{
+    margin-right: 90px;
+} 
+ .delete-requisition-button{
+    margin-left: -79px;
+ }

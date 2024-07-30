@@ -72,3 +72,12 @@
     width: 15vw;
     margin-bottom: -15px;
 }
+.update-jobs-button{
+    margin-right: 90px;
+} 
+ .delete-jobs-button{
+    margin-left: -79px;
+ }
+ .search-button{
+    margin-left: 20px;
+ }

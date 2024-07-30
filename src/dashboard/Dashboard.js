@@ -36,9 +36,14 @@ const Dashboard = () =>{
                 <Link to="/profile">Profile</Link>
                 <Link to="/settings">Settings</Link>
                 <Link to="/attendance">Attendance</Link>
-                <Link to="/ats">ATS</Link>
+                <Link to="/jobs">Jobs</Link>
                 <Link to="/requisitions">Requisitions</Link>
                 <Link to="/candidates">Candidates</Link>
+                <Link to="/submissions">Submissions</Link>
+                <Link to="/interviews">Interviews</Link>
+                <Link to="/employees">Employees</Link>
+                <Link to="/assignments">Assignments</Link>
+                
                 <button onClick={handleLogout} className='logout-page'>Logout</button>  
             </div>
             <div className='dashboard-widgets'>
