@@ -1316,7 +1316,7 @@ app.post("/assignments",(req,res) => {
     res.status(201).json({ message: 'Assignment created successfully!', assignmentId: results.insertId });
   })
 })
-
+          
 //get All Assignments
 app.get("/assignments",(req,res) => {
   const page = parseInt(req.query.page) || 1;
