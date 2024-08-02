@@ -30,32 +30,62 @@ const Interviews = () => {
   const [isEditMode, setIsEditMode] = useState(false);
   const [editId, setEditId] = useState(null);
   const [showInterviews, setShowInterviews] = useState(false);
+  const [searchResults, setSearchResults] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [showSearch, setShowSearch] = useState(false);
+  const [isSearchActive, setIsSearchActive] = useState(false); // Added state
+  const [loading, setLoading] = useState(true);
+  const [limit, setLimit] = useState(10);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetchInterviews();
-  }, [page]);
+    if (isSearchActive) {
+      handleSearchInterviews(page);
+    } else {
+      handleFindAllInterviews(page);
+    }
+  }, [page, isSearchActive]);
 
   //Fetch all interviews fron backend
   const fetchInterviews = async () => {
     try {
-      const response = await axios.get(`${appUrl}/interviews?page=${page}&limit=10`);
+      const response = await axios.get(`${appUrl}/interviews?page=${page}&limit=${limit}`);
       setInterviews(response.data.interviews);
-      setTotalPages(Math.ceil(response.data.totalCount/10))
+      setTotalPages(Math.ceil(response.data.totalCount/limit))
     } catch (error) {
       console.error("Error fetching interviews:", error);
       alert("Failed to fetch interviews");
     }
   };
 
+  const handleSearchInterviews = (currentPage = 1) => {
+    setLoading(true);
+    axios.get(`${appUrl}/interviews/search`, {
+      params: {
+        searchValue: searchQuery,
+        page: currentPage,
+        pageSize: limit,
+      },
+    })
+    .then((response) => {
+      console.log("Search Results:", response.data); // Check response structure
+      setSearchResults(response.data.interviews || []); // Adjust based on response structure
+      setTotalPages(Math.ceil(response.data.totalCount / limit));
+      setShowInterviews(true); // Show requisitions if not already visible
+      setPage(currentPage); // Set current page
+      //setTotalCount(response.data.totalCount || 0); // Set total count for pagination
+      //setLoading(false); // Set loading state to false
+    })
+    .catch((error) => {
+      console.error("Error searching interviews:", error);
+      setLoading(false); // Set loading state to false
+    });
+  }
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
+    setFormData((prevState) => ({ ...prevState, [name]: value }));
   };
 
   //Handle from submissions to create or update an interview
@@ -198,7 +228,9 @@ const formatTime = (timeString) => {
     setShowInterviews(false);
   };
   const handlePageChange = (newPage) => {
-    setPage(newPage);
+    if (newPage > 0 && newPage <= totalPages) {
+      setPage(newPage);
+    }
   };
   return (
     <div>
@@ -407,10 +439,36 @@ const formatTime = (timeString) => {
             Create Interview
           </button>
           <button onClick={handleFindAllInterviews} className="interview-find-button">Find All Interviews</button>
-
-          {showInterviews && (
+          <button
+            onClick={() => setShowSearch(!showSearch)}
+            className="searchInterviews"
+          >
+            Search Interviews
+          </button>
+          {showSearch && (
+        <div className="interviews-header-right">
+          <input
+            type="text"
+            placeholder="Search interviews..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="interview-search-text"
+          />
+          <button
+            onClick={() => {
+              setIsSearchActive(true); // Set search active
+              handleSearchInterviews(page);
+            }}
+            className="interviews-Search-button"
+          >
+            Search
+          </button>
+        </div>
+      )}
+          {showInterviews  && interviews.length> 0 &&(
             <div>
-              <h1 className="interviewHeader">All Interviews</h1>
+              {/* <h1 className="interviewHeader">All Interviews</h1> */}
+              <h1 className="title">{isSearchActive ? "Search Results" : "All Interviews"}</h1>
               <table className="interview-table">
                 <thead>
                   <tr>
@@ -437,7 +495,8 @@ const formatTime = (timeString) => {
                   </tr>
                 </thead>
                 <tbody>
-                  {interviews.map((interview) => (
+                  {/* {interviews.map((interview) => ( */}
+                  {(isSearchActive ? searchResults : interviews).map((interview, index) => (
                     <tr key={interview.InterviewID}>
                       <td>{interview.InterviewID}</td>
                       <td>{interview.Title}</td>

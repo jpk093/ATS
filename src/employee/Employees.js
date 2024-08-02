@@ -13,35 +13,65 @@ const Employees = () => {
     ReportingTo: "",
   });
   const [employees, setEmployees] = useState([]);
+  const [searchResults, setSearchResults] = useState([])
   const [showForm, setShowForm] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
   const [editId, setEditId] = useState(null);
   const [showEmployees, setShowEmployees] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [showSearch, setShowSearch] = useState(false);
+  const [isSearchActive, setIsSearchActive] = useState(false); // Added state
+  const [loading, setLoading] = useState(true);
+  const [limit, setLimit] = useState(10);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetchEmployees();
-  }, [page]);
+    if (isSearchActive) {
+      handleSearchEmployees(page);
+    } else {
+      handleFindAllEmployees(page);
+    }
+  }, [page, isSearchActive]);
 
   const fetchEmployees = async () => {
     try {
-      const response = await axios.get(`${appUrl}/employees?page=${page}&limit=10`);
+      const response = await axios.get(`${appUrl}/employees?page=${page}&limit=${limit}`);
       setEmployees(response.data.employees);
-      setTotalPages(Math.ceil(response.data.totalCount/10))
+      setTotalPages(Math.ceil(response.data.totalCount/limit))
     } catch (error) {
       console.error("Error fetching employees:", error);
       alert("Failed to fetch employees");
     }
   };
 
+  const handleSearchEmployees =(currentPage = 1) => {
+    setLoading(true);
+    axios.get(`${appUrl}/employees/search`, {
+      params: {
+        searchValue: searchQuery,
+        page: currentPage,
+        pageSize: limit,
+      },
+    })
+    .then((response) => {
+      console.log("Search Results:", response.data); // Check response structure
+      setSearchResults(response.data.employees || []); // Adjust based on response structure
+      setTotalPages(Math.ceil(response.data.totalCount / limit));
+      setShowEmployees(true); 
+      setPage(currentPage); // Set current page
+      
+    })
+    .catch((error) => {
+      console.error("Error searching employees:", error);
+      setLoading(false); // Set loading state to false
+    });
+  }
+
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
+    setFormData((prevState) => ({ ...prevState, [name]: value }));
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -123,7 +153,9 @@ const Employees = () => {
     setShowEmployees(false);
   };
   const handlePageChange = (newPage) => {
-    setPage(newPage);
+    if (newPage > 0 && newPage <= totalPages) {
+      setPage(newPage);
+    }
   };
   return (
     <div>
@@ -215,10 +247,36 @@ const Employees = () => {
           >
             Find All Employees
           </button>
-
-          {showEmployees && (
+          <button
+            onClick={() => setShowSearch(!showSearch)}
+            className="searchEmployees"
+          >
+            Search Employees
+          </button>
+          {showSearch && (
+        <div className="employees-header-right">
+          <input
+            type="text"
+            placeholder="Search employees..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="employees-search-text"
+          />
+          <button
+            onClick={() => {
+              setIsSearchActive(true); // Set search active
+              handleSearchEmployees(page);
+            }}
+            className="employees-Search-button"
+          >
+            Search
+          </button>
+        </div>
+      )}
+          {showEmployees && employees.length > 0 && (
             <div>
-              <h1 className="employeeHeader">All Employees</h1>
+              {/* <h1 className="employeeHeader">All Employees</h1> */}
+              <h1 className="employeeHeader">{isSearchActive ? "Search Results" : "All Employees"}</h1>
               <table className="employee-table">
                 <thead>
                   <tr>
@@ -232,8 +290,9 @@ const Employees = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {employees.map((employee) => (
-                    <tr key={employee.EmployeeID}>
+                  {/* {employees.map((employee) => ( */}
+                  {(isSearchActive ? searchResults : employees).map((employee, index) => (
+                      <tr key={index}>
                       <td>{employee.EmployeeID}</td>
                       <td>{employee.EmployeeName}</td>
                       <td>{employee.Email}</td>

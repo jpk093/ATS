@@ -22,58 +22,92 @@ const Requisitions = () => {
     ApprovalDate: "",
     ClosedDate: "",
   });
-  const [requisitions,SetRequisitions]=useState([]);
+  const [requisitions, SetRequisitions] = useState([]);
+  const [searchResults, setSearchResults] = useState([]);
   const [showForm, setShowForm] = useState(false); // State to control form visibility
   const [isEditMode, setIsEditMode] = useState(false);
   const [editId, setEditId] = useState(null);
   const [showRequisitions, setShowRequisitions] = useState(false); // New state to control requisitions table visibility
+  const [searchQuery, setSearchQuery] = useState("");
+  const [showSearch, setShowSearch] = useState(false);
+  const [isSearchActive, setIsSearchActive] = useState(false); // Added state
+  const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
   const [totalPages, setTotalPages] = useState(1);
   const navigate = useNavigate();
 
   //Fetch all requisitions on component mount
   useEffect(() => {
-    fetchRequisitions();
-  }, [page]);
+    if (isSearchActive) {
+      handleSearchRequisitions(page);
+    } else {
+      handleFindAllRequisitions(page);
+    }
+  }, [page, isSearchActive]);
 
   //Fetch all requisitions from backend
-  const fetchRequisitions  = async () =>{
-    try{
-      const response=await axios.get(`${appUrl}/requisitions?page=${page}&limit=10`);
+  const fetchRequisitions = async () => {
+    try {
+      const response = await axios.get(
+        `${appUrl}/requisitions?page=${page}&limit=${limit}`
+      );
       SetRequisitions(response.data.requisitions);
-      setTotalPages(Math.ceil(response.data.totalCount/10))
-    }catch(error){
-      console.error("Error fetching requisitions:",error);
+      setTotalPages(Math.ceil(response.data.totalCount / limit));
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching requisitions:", error);
       alert("Failed to fetch requisitions");
     }
+  };
+
+  const handleSearchRequisitions =(currentPage = 1) => {
+    setLoading(true);
+    axios.get(`${appUrl}/requisitions/search`, {
+      params: {
+        searchValue: searchQuery,
+        page: currentPage,
+        pageSize: limit,
+      },
+    })
+    .then((response) => {
+      console.log("Search Results:", response.data); // Check response structure
+      setSearchResults(response.data.requisitions || []); // Adjust based on response structure
+      setTotalPages(Math.ceil(response.data.totalCount / limit));
+      setShowRequisitions(true); // Show requisitions if not already visible
+      setPage(currentPage); // Set current page
+      //setTotalCount(response.data.totalCount || 0); // Set total count for pagination
+      //setLoading(false); // Set loading state to false
+    })
+    .catch((error) => {
+      console.error("Error searching requisitions:", error);
+      setLoading(false); // Set loading state to false
+    });
   }
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
+    setFormData((prevState) => ({ ...prevState, [name]: value }));
   };
-// Handle form submission to create a new requisition
+  // Handle form submission to create a new requisition
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if(isEditMode){
+    if (isEditMode) {
       handleUpdate(editId);
-    }else{
-    try {
-      const response = await axios.post(`${appUrl}/requisitions`, formData);
-      console.log("Requisition created:", response.data);
-      alert("Requisition created successfully"); // Display alert upon success
-      fetchRequisitions();
-      setShowForm(false);
-    } catch (error) {
-      console.error("Error creating requisition:", error);
-      alert("Failed to create requisition"); // Display alert upon failure
+    } else {
+      try {
+        const response = await axios.post(`${appUrl}/requisitions`, formData);
+        console.log("Requisition created:", response.data);
+        alert("Requisition created successfully"); // Display alert upon success
+        fetchRequisitions();
+        setShowForm(false);
+      } catch (error) {
+        console.error("Error creating requisition:", error);
+        alert("Failed to create requisition"); // Display alert upon failure
+      }
     }
-  }
   };
-   // Display the form for adding new requisitions
+  // Display the form for adding new requisitions
   const handleCreateRequisitions = () => {
     setShowForm(true); // Display the form
     setIsEditMode(false);
@@ -96,20 +130,23 @@ const Requisitions = () => {
       ClosedDate: "",
     });
   };
-   // Navigate back to dashboard or previous page
+  // Navigate back to dashboard or previous page
   const handleBack = () => {
     navigate("/dashboard"); // Adjust this route as needed
   };
 
-   // Utility function to format dates
-   const formatDate = (dateString) => {
+  // Utility function to format dates
+  const formatDate = (dateString) => {
     const date = new Date(dateString);
     return date.toLocaleDateString("en-CA");
   };
   // Update an existing requisition
-  const handleUpdate = async(requisitionId) =>{
-    try{
-      const response = await axios.put(`${appUrl}/requisitions/${requisitionId}`, formData);
+  const handleUpdate = async (requisitionId) => {
+    try {
+      const response = await axios.put(
+        `${appUrl}/requisitions/${requisitionId}`,
+        formData
+      );
       console.log("Requisition updated:", response.data);
       alert("Requisition updated successfully");
       // Refresh requisitions after updating
@@ -119,7 +156,7 @@ const Requisitions = () => {
       console.error("Error updating requisition:", error);
       alert("Failed to update requisition");
     }
-  }
+  };
   // Delete a requisition
   const handleDelete = async (id) => {
     try {
@@ -133,13 +170,13 @@ const Requisitions = () => {
       alert("Failed to delete requisition");
     }
   };
-   // Handle showing all requisitions
-   const handleFindAllRequisitions = () =>{
+  // Handle showing all requisitions
+  const handleFindAllRequisitions = () => {
     setShowRequisitions(true);
     setShowForm(false);
     fetchRequisitions();
-   }
-   const handleEditRequisitions = (requisition) => {
+  };
+  const handleEditRequisitions = (requisition) => {
     setFormData({
       JobID: requisition.JobID,
       JobTitle: requisition.JobTitle,
@@ -163,13 +200,20 @@ const Requisitions = () => {
     setShowRequisitions(false);
   };
   const handlePageChange = (newPage) => {
-    setPage(newPage);
+    if (newPage > 0 && newPage <= totalPages) {
+      setPage(newPage);
+    }
   };
+
+  // // Calculate total pages
+  // const totalPages = Math.max(1, Math.ceil(totalCount / limit));
   return (
     <div>
       {showForm ? (
         <div className="add-requisition-form">
-          <h1 className="header">{isEditMode ? "Edit Requisitions" : "Add Requisitions"}</h1>
+          <h1 className="header">
+            {isEditMode ? "Edit Requisitions" : "Add Requisitions"}
+          </h1>
           <form onSubmit={handleSubmit}>
             <input
               type="text"
@@ -258,7 +302,7 @@ const Requisitions = () => {
               <option value="HIGH">HIGH</option>
             </select>
             <label htmlFor="PositionType" className="labelPositionType">
-            PositionType:
+              PositionType:
             </label>
             <select
               id="PositionType"
@@ -305,7 +349,7 @@ const Requisitions = () => {
               className="input-textarea"
             ></textarea>
             <label htmlFor="ApprovalDate" className="labelDate">
-            ApprovalDate:
+              ApprovalDate:
             </label>
             <input
               type="date"
@@ -317,7 +361,7 @@ const Requisitions = () => {
               className="inputDate-styles"
             />
             <label htmlFor="ClosedDate" className="labelDate">
-            ClosedDate:
+              ClosedDate:
             </label>
             <input
               type="date"
@@ -330,7 +374,7 @@ const Requisitions = () => {
             />
             <div>
               <button type="submit" className="AddRequisition">
-              {isEditMode ? "Update Requisition" : "Add Requisition"}
+                {isEditMode ? "Update Requisition" : "Add Requisition"}
               </button>
               <button type="button" onClick={handleBack} className="backButton">
                 Back
@@ -355,11 +399,39 @@ const Requisitions = () => {
           >
             Find All Requisitions
           </button>
+          <button
+            onClick={() => setShowSearch(!showSearch)}
+            className="searchRequisitions"
+          >
+            Search Requisitions
+          </button>
         </div>
       )}
-       {showRequisitions && requisitions.length > 0 && (
+      {showSearch && (
+        <div className="requisitions-header-right">
+          <input
+            type="text"
+            placeholder="Search requisitions..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="requisitions-Search-text"
+          />
+          <button
+            onClick={() => {
+              setIsSearchActive(true); // Set search active
+              handleSearchRequisitions(page);
+            }}
+            className="requisitions-Search-button"
+          >
+            Search
+          </button>
+        </div>
+      )}
+      
+      {showRequisitions && requisitions.length > 0 && (
         <div>
-          <h1 className="headerRequisitions">All Requisitions</h1>
+          {/* <h1 className="headerRequisitions">All Requisitions</h1> */}
+          <h1 className="title">{isSearchActive ? "Search Results" : "All Requisitions"}</h1>
           <table className="requisition-table">
             <thead>
               <tr>
@@ -383,14 +455,15 @@ const Requisitions = () => {
               </tr>
             </thead>
             <tbody>
-              {requisitions.map((requisition,index) =>(
+            {(isSearchActive ? searchResults : requisitions).map((requisition, index) => (
+              // {requisitions.map((requisition, index) => (
                 <tr key={index}>
                   <td>{requisition.RequisitionID}</td>
                   <td>{requisition.JobID}</td>
                   <td>{requisition.JobTitle}</td>
                   <td>{requisition.Department}</td>
                   <td>{requisition.HiringManager}</td>
-                  <td>{requisition.CreatedBy}</td>                 
+                  <td>{requisition.CreatedBy}</td>
                   <td>{formatDate(requisition.CreationDate)}</td>
                   <td>{requisition.Status}</td>
                   <td>{requisition.Priority}</td>
@@ -402,8 +475,18 @@ const Requisitions = () => {
                   <td>{formatDate(requisition.ApprovalDate)}</td>
                   <td>{formatDate(requisition.ClosedDate)}</td>
                   <td>
-                    <button onClick={ () =>handleEditRequisitions(requisition) } className="update-requisition-button">Update</button>
-                    <button onClick={ () => handleDelete(requisition.RequisitionID)} className="delete-requisition-button">Delete</button>
+                    <button
+                      onClick={() => handleEditRequisitions(requisition)}
+                      className="update-requisition-button"
+                    >
+                      Update
+                    </button>
+                    <button
+                      onClick={() => handleDelete(requisition.RequisitionID)}
+                      className="delete-requisition-button"
+                    >
+                      Delete
+                    </button>
                   </td>
                 </tr>
               ))}

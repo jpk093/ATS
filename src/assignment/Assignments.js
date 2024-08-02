@@ -19,27 +19,61 @@ const Assignments = () => {
     WorkLocationState: "",
   });
   const [assignments, setAssignments] = useState([]);
+  const [searchResults, setSearchResults] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
   const [editId, setEditId] = useState(null);
   const [showAssignments, setShowAssignments] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [showSearch, setShowSearch] = useState(false);
+  const [isSearchActive, setIsSearchActive] = useState(false); // Added state
+  const [loading, setLoading] = useState(true);
+  const [limit, setLimit] = useState(10);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetchAssignments();
-  }, [page]);
+    if (isSearchActive) {
+      handleSearchAssignments(page);
+    } else {
+      handleFindAllAssignments(page);
+    }
+  }, [page, isSearchActive]);
+
   const fetchAssignments = async () => {
     try {
-      const response = await axios.get(`${appUrl}/assignments?page=${page}&limit=10`);
+      const response = await axios.get(`${appUrl}/assignments?page=${page}&limit=${limit}`);
       setAssignments(response.data.assignments);
-      setTotalPages(Math.ceil(response.data.totalCount/10))
+      setTotalPages(Math.ceil(response.data.totalCount/limit))
+      setLoading(false);
     } catch (error) {
       console.error("Error fetching assignments:", error);
       alert("Failed to fetch assignments");
     }
   };
+
+  const handleSearchAssignments =(currentPage = 1) => {
+    setLoading(true);
+    axios.get(`${appUrl}/assignments/search`, {
+      params: {
+        searchValue: searchQuery,
+        page: currentPage,
+        pageSize: limit,
+      },
+    })
+    .then((response) => {
+      console.log("Search Results:", response.data); // Check response structure
+      setSearchResults(response.data.assignments || []); // Adjust based on response structure
+      setTotalPages(Math.ceil(response.data.totalCount / limit));
+      setShowAssignments(true); // Show assignments if not already visible
+      setPage(currentPage); // Set current page
+    })
+    .catch((error) => {
+      console.error("Error searching assignments:", error);
+      setLoading(false); // Set loading state to false
+    });
+  }
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({
@@ -134,7 +168,9 @@ const Assignments = () => {
     setShowAssignments(false);
   };
   const handlePageChange = (newPage) => {
-    setPage(newPage);
+    if (newPage > 0 && newPage <= totalPages) {
+      setPage(newPage);
+    }
   };
   return (
     <div>
@@ -285,10 +321,36 @@ const Assignments = () => {
           >
             Find All Assignments
           </button>
-
-          {showAssignments && (
+          <button
+            onClick={() => setShowSearch(!showSearch)}
+            className="searchAssignments"
+          >
+            Search Assignments
+          </button>
+          {showSearch && (
+        <div className="assignments-header-right">
+          <input
+            type="text"
+            placeholder="Search assignments..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="assignments-search-text"
+          />
+          <button
+            onClick={() => {
+              setIsSearchActive(true); // Set search active
+              handleSearchAssignments(page);
+            }}
+            className="assignments-Search-button"
+          >
+            Search
+          </button>
+        </div>
+      )}
+          {showAssignments && assignments.length > 0 && (
             <div>
-              <h1 className="assignmentHeader">All Assignments</h1>
+              {/* <h1 className="assignmentHeader">All Assignments</h1> */}
+              <h1 className="title">{isSearchActive ? "Search Results" : "All Assignments"}</h1>
               <table className="assignment-table">
                 <thead>
                   <tr>
@@ -308,8 +370,9 @@ const Assignments = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {assignments.map((assignment) => (
-                    <tr key={assignment.AssignmentID}>
+                  {/* {assignments.map((assignment) => ( */}
+                  {(isSearchActive ? searchResults : assignments).map((assignment, index) => (
+                     <tr key={index}>
                       <td>{assignment.AssignmentID}</td>
                       <td>{assignment.EmployeeID}</td>
                       <td>{assignment.AssignmentTitle}</td>

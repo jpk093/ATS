@@ -20,18 +20,31 @@ const Jobs = () => {
     ClosingDate: "",
   });
   const [jobs, setJobs] = useState([]);
+  const [searchResults, setSearchResults] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [showJobs, setShowJobs] = useState(false);
   const [editMode, setEditMode] = useState(false); // State to control if editing
   const [currentJobId, setCurrentJobId] = useState(null); // State to track job being edited
-  // const [searchQuery, setSearchQuery] = useState(""); // State for search query
-  const [showSearch, setShowSearch] = useState(false); // State to control search input visibility
-  // const [jobID, setJobID] = useState(""); // New state for JobID search
+  const [searchQuery, setSearchQuery] = useState("");
+  const [showSearch, setShowSearch] = useState(false); // New state for search input visibility
   const navigate = useNavigate();
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
   const [totalCount, setTotalCount] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [isSearchActive, setIsSearchActive] = useState(false); // New state to manage search status
+
+  // useEffect(() => {
+  //   setShowJobs(false)
+  // }, []);
+
+  useEffect(() => {
+    if (isSearchActive) {
+      handleSearchJobs(page);
+    } else {
+      handleFindAllJobs(page);
+    }
+  }, [page, isSearchActive]);
 
   //Handle input change
   const handleChange = (e) => {
@@ -101,21 +114,22 @@ const Jobs = () => {
         });
     }
   };
-
+  
   const handleFindAllJobs = (currentPage = 1) => {
     setLoading(true);
     axios
       .get(`${appUrl}/jobs/all`,{
         params:{
           page:currentPage,
-          limit:limit
+          limit:limit,
         }
       })
       .then((response) => {
-        setJobs(response.data.jobs);
+        console.log("Find All Jobs:", response.data); // Check response
+        setJobs(response.data.jobs || []);
         setShowJobs(true);
         setPage(currentPage);
-        setTotalCount(response.data.totalCount); // Update total jobs count
+        setTotalCount(response.data.totalCount || 0); // Update total jobs count
         setLoading(false);
       })
       .catch((error) => {
@@ -124,7 +138,29 @@ const Jobs = () => {
       });
   };
 
-
+  const handleSearchJobs = (currentPage = 1) =>{
+    setLoading(true);
+    axios.get(`${appUrl}/jobs/search`, {
+      params: {
+        searchValue: searchQuery,
+        page: currentPage,
+        pageSize: limit,
+      },
+    })
+    .then((response) => {
+      console.log("Search Results:", response.data); // Check response
+      setSearchResults(response.data.jobs || []); // Adjust based on response structure
+      // setJobs(response.data);
+      setShowJobs(true);
+      setPage(currentPage);
+      setTotalCount(response.data.totalCount || 0);
+      setLoading(false);
+    })
+    .catch((error) =>{
+      console.error("Error searching jobs:", error);
+      setLoading(false);
+    })
+  }
   // Utility function to format dates
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -185,7 +221,8 @@ const Jobs = () => {
     }
   };
   // Calculate total pages
-  const totalPages = Math.ceil(totalCount / limit);
+  // const totalPages = Math.ceil(totalCount / limit);
+  const totalPages = Math.max(1, Math.ceil(totalCount / limit));
   return (
     <div className="ats-container">
       <button onClick={handleBack} className="back-button">
@@ -200,9 +237,29 @@ const Jobs = () => {
       >
         Add Job
       </button>
-      <button onClick={() =>handleFindAllJobs(page)} className="job-button">
+      <button onClick={() =>{
+        // setIsSearchActive(false); // Ensure pagination is reset
+        // setShowSearch(false); // Hide search input
+        handleFindAllJobs(page)}} className="job-button">
         Find All Job
       </button>
+      <button onClick={() => setShowSearch(!showSearch)} className="job-button">
+        Search Job
+      </button>
+      {showSearch && (
+      <div className="job-header-right">
+          <input
+            type="text"
+            placeholder="Search jobs..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="job-Search-text"
+          />
+          <button onClick={() =>{
+            setIsSearchActive(true); // Set search active
+            handleSearchJobs(page)}} className="job-Search-button">Search</button>
+        </div>
+      )}
       {showForm && (
         <div>
           <h1 className="header">{editMode ? "Edit Job" : "Add New Job"}</h1>
@@ -336,7 +393,7 @@ const Jobs = () => {
       // {jobs.length > 0 && showJobs && (
         showJobs && (
         <div>
-          <h1 className="title">All Jobs</h1>
+          <h1 className="title">{isSearchActive ? "Search Results" : "All Jobs"}</h1>
           <table className="job-table">
             <thead>
               <tr>
@@ -357,7 +414,7 @@ const Jobs = () => {
               </tr>
             </thead>
             <tbody>
-              {jobs.map((job, index) => (
+            {(isSearchActive ? searchResults : jobs).map((job, index) => (
                 <tr key={index}>
                   <td>{job.JobID}</td>
                   <td>{job.JobTitle}</td>
@@ -413,3 +470,5 @@ const Jobs = () => {
 };
 
 export default Jobs;
+
+

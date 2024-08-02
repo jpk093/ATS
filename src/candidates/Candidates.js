@@ -20,32 +20,63 @@ const Candidates = () => {
   const [editId, setEditId] = useState(null);
   const [showForm, setShowForm] = useState(false);
   const [showCandidates, setShowCandidates] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [showSearch, setShowSearch] = useState(false); // New state for search input visibility
+  const [limit, setLimit] = useState(10);
+  const [searchResults, setSearchResults] = useState([]);
+  const [isSearchActive, setIsSearchActive] = useState(false); // Added state
+  const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const navigate = useNavigate();
 
+  //Fetch all Candidates on component mount
   useEffect(() => {
-    fetchCandidates();
-  }, [page]);
+    if (isSearchActive) {
+      handleSearchCandidates(page);
+    } else {
+      handleFindAllCandidates(page);
+    }
+  }, [page, isSearchActive]);
 
   const fetchCandidates = async () => {
     try {
-      const response = await axios.get(`${appUrl}/candidates?page=${page}&limit=10`);
+      const response = await axios.get(`${appUrl}/candidates?page=${page}&limit=${limit}`);
       setCandidates(response.data.candidates); 
-      setTotalPages(Math.ceil(response.data.totalCount / 10));
+      setTotalPages(Math.ceil(response.data.totalCount / limit));
+      setLoading(false);
     } catch (error) {
       console.error("Error fetching candidates:", error);
       alert("Failed to fetch candidates");
     }
   };
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
-  };
+  const  handleSearchCandidates = (currentPage = 1) => {
+    setLoading(true);
+    axios.get(`${appUrl}/candidates/search`, {
+      params: {
+        searchValue: searchQuery,
+        page: currentPage,
+        pageSize: limit,
+      },
+  })
+  .then((response) => {
+      console.log("Search Results:", response.data); // Check response structure
+      setSearchResults(response.data.candidates || []); // Adjust based on response structure
+      setTotalPages(Math.ceil(response.data.totalCount / limit));
+      setShowCandidates(true); // Show candidates if not already visible
+      setPage(currentPage); // Set current page
+      setLoading(false);
+  })
+  .catch((error) => {
+    console.error("Error searching candidates:", error);
+    setLoading(false); // Set loading state to false
+  });
+}
+const handleChange = (e) => {
+  const { name, value } = e.target;
+  setFormData((prevState) => ({ ...prevState, [name]: value }));
+};
   // const handleFileChange = (e) => {
   //   const file = e.target.files[0];
   //   setFormData({
@@ -154,7 +185,9 @@ const Candidates = () => {
     fetchCandidates(); // Fetch all candidates
   };
   const handlePageChange = (newPage) => {
-    setPage(newPage);
+    if (newPage > 0 && newPage <= totalPages) {
+      setPage(newPage);
+    }
   };
   return (
     <div>
@@ -265,11 +298,38 @@ const Candidates = () => {
           <button onClick={ () => handleFindAllCandidates()} className="findCandidates">
             Find All Candidates
           </button>
+          <button
+            onClick={() => setShowSearch(!showSearch)}
+            className="searchRCandidates"
+          >
+            Search Candidates
+          </button>
+        </div>
+      )}
+      {showSearch && (
+        <div className="candidates-header-right">
+          <input
+            type="text"
+            placeholder="Search candidates..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="search-Text"
+          />
+          <button
+            onClick={() => {
+              setIsSearchActive(true); // Set search active
+              handleSearchCandidates();
+            }}
+            className="candidates-Search-button"
+          >
+            Search
+          </button>
         </div>
       )}
       {showCandidates && candidates.length > 0 && (
         <div>
-          <h1 className="headerCandidates">All Candidates</h1>
+          {/* <h1 className="headerCandidates">All Candidates</h1> */}
+          <h1 className="title">{isSearchActive ? "Search Results" : "All Candidates"}</h1>
           <table className="candidate-table">
             <thead>
               <tr>
@@ -286,7 +346,8 @@ const Candidates = () => {
               </tr>
             </thead>
             <tbody>
-              {candidates.map((candidate, index) => (
+            {(isSearchActive ? searchResults : candidates).map((candidate, index) => (
+             // {candidates.map((candidate, index) => (
                 <tr key={index}>
                   <td>{candidate.CandidateID}</td>
                   <td>{candidate.FirstName}</td>

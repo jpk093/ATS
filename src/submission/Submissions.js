@@ -24,30 +24,62 @@ const Submissions = () => {
     RejectionComments: "",
   });
   const [submissions, setSubmissions] = useState([]);
+  const [searchResults, setSearchResults] = useState([]);
   const [showForm, setShowForm] = useState(null);
   const [isEditMode, SetIsEditMode] = useState(false);
   const [editId, setEditId] = useState(null);
   const [showSubmissions, setShowSubmissions] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [showSearch, setShowSearch] = useState(false);
+  const [isSearchActive, setIsSearchActive] = useState(false); // Added state
+  const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
   const [totalPages, setTotalPages] = useState(1);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    fetchSubmissions();
-  }, [page]);
+
+ useEffect(() => {
+  if (isSearchActive) {
+    handleSearchSubmissions(page);
+  } else {
+    handleFindAllSubmissions(page);
+  }
+}, [page, isSearchActive]);
 
   //Fetch all submissions from backend
   const fetchSubmissions = async () => {
     try {
-      const response = await axios.get(`${appUrl}/submissions?page=${page}&limit=10`);
+      const response = await axios.get(`${appUrl}/submissions?page=${page}&limit=${limit}`);
       setSubmissions(response.data.submissions);
-      setTotalPages(Math.ceil(response.data.totalCount/10))
+      setTotalPages(Math.ceil(response.data.totalCount/limit))
+      setLoading(false);
     } catch (error) {
       console.error("Error fetching submissions:", error);
       alert("Failed to fetch submissions");
     }
   };
-
+const handleSearchSubmissions = (currentPage = 1) => {
+  setLoading(true);
+    axios.get(`${appUrl}/submissions/search`, {
+      params: {
+        searchValue: searchQuery,
+        page: currentPage,
+        pageSize: limit,
+      },
+    })
+    .then((response) => {
+      console.log("Search Results:", response.data); // Check response structure
+      setSearchResults(response.data.submissions || []); // Adjust based on response structure
+      setTotalPages(Math.ceil(response.data.totalCount / limit));
+      setShowSubmissions(true); // Show requisitions if not already visible
+      setPage(currentPage); // Set current page
+    })
+    .catch((error) => {
+      console.error("Error searching submissions:", error);
+      setLoading(false); // Set loading state to false
+    });
+}
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({
@@ -168,7 +200,9 @@ const Submissions = () => {
     setShowSubmissions(false);
   };
   const handlePageChange = (newPage) => {
-    setPage(newPage);
+    if (newPage > 0 && newPage <= totalPages) {
+      setPage(newPage);
+    }
   };
   return (
     <div>
@@ -360,6 +394,31 @@ const Submissions = () => {
           >
             Find All Submissions
           </button>
+          <button
+            onClick={() => setShowSearch(!showSearch)}
+            className="searchSubmissions"
+          >
+            Search Submissions
+          </button>
+        </div>
+      )}
+      {showSearch && (
+        <div className="submissions-header-right">
+          <input
+            type="text"
+            placeholder="Search submissions..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+          <button
+            onClick={() => {
+              setIsSearchActive(true); // Set search active
+              handleSearchSubmissions(page);
+            }}
+            className="submissions-Search-button"
+          >
+            Search
+          </button>
         </div>
       )}
       {showSubmissions && submissions.length > 0 && (
@@ -389,7 +448,8 @@ const Submissions = () => {
               </tr>
             </thead>
             <tbody>
-              {submissions.map((submission, index) => (
+            {(isSearchActive ? searchResults : submissions).map((submission, index) => (
+              //{submissions.map((submission, index) => (
                 <tr key={index}>
                   <td>{submission.SubmissionID}</td>
                   <td>{submission.FirstName}</td>
