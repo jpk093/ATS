@@ -35,7 +35,7 @@ const Candidates = () => {
     if (isSearchActive) {
       handleSearchCandidates(page);
     } else {
-      handleFindAllCandidates(page);
+      fetchCandidates(page);
     }
   }, [page, isSearchActive]);
 
@@ -276,9 +276,10 @@ const handleChange = (e) => {
               <button type="submit" className="CreateCandidates">
                 {isEditMode ? "Update Candidate" : "Create Candidate"}
               </button>
-              <button type="button" onClick={handleBack} className="backButton">
+              {/* <button type="button" onClick={handleBack} className="backButton">
                 Back
-              </button>
+              </button> */}
+              <button onClick={() => setShowForm(false)} className="candidate-cancle-button">Cancel</button>
             </div>
           </form>
         </div>

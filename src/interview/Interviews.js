@@ -44,7 +44,7 @@ const Interviews = () => {
     if (isSearchActive) {
       handleSearchInterviews(page);
     } else {
-      handleFindAllInterviews(page);
+      fetchInterviews(page);
     }
   }, [page, isSearchActive]);
 
@@ -421,7 +421,7 @@ const formatTime = (timeString) => {
             />
             <div>
             <button type="submit" className="interview-submit">{isEditMode ? "Update Interview" : "Add Interview"} </button>
-            <button type="button" onClick={handleBack} className="interview-back-button">Back</button>
+            {/* <button type="button" onClick={handleBack} className="interview-back-button">Back</button> */}
             <button onClick={() => setShowForm(false)} className="interview-cancle-button">Cancel</button>
             </div>
           </form>

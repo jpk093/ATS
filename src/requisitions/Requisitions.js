@@ -37,12 +37,12 @@ const Requisitions = () => {
   const [totalPages, setTotalPages] = useState(1);
   const navigate = useNavigate();
 
-  //Fetch all requisitions on component mount
+  // //Fetch all requisitions on component mount
   useEffect(() => {
     if (isSearchActive) {
       handleSearchRequisitions(page);
     } else {
-      handleFindAllRequisitions(page);
+      fetchRequisitions(page);
     }
   }, [page, isSearchActive]);
 
@@ -205,8 +205,6 @@ const Requisitions = () => {
     }
   };
 
-  // // Calculate total pages
-  // const totalPages = Math.max(1, Math.ceil(totalCount / limit));
   return (
     <div>
       {showForm ? (
@@ -376,9 +374,10 @@ const Requisitions = () => {
               <button type="submit" className="AddRequisition">
                 {isEditMode ? "Update Requisition" : "Add Requisition"}
               </button>
-              <button type="button" onClick={handleBack} className="backButton">
+              {/* <button type="button" onClick={handleBack} className="backButton">
                 Back
-              </button>
+              </button> */}
+              <button onClick={() => setShowForm(false)} className="requisition-cancle-button">Cancel</button>
             </div>
           </form>
         </div>

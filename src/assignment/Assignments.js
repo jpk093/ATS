@@ -37,7 +37,7 @@ const Assignments = () => {
     if (isSearchActive) {
       handleSearchAssignments(page);
     } else {
-      handleFindAllAssignments(page);
+      fetchAssignments(page);
     }
   }, [page, isSearchActive]);
 
@@ -288,13 +288,13 @@ const Assignments = () => {
               <button type="submit" className="assignment-submit">
                 {isEditMode ? "Update Assignment" : "Add Assignment"}
               </button>
-              <button
+              {/* <button
                 type="button"
                 onClick={handleBack}
                 className="assignment-back-button"
               >
                 Back
-              </button>
+              </button> */}
               <button
                 onClick={() => setShowForm(false)}
                 className="assignment-cancel-button"

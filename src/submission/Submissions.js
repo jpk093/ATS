@@ -43,7 +43,7 @@ const Submissions = () => {
   if (isSearchActive) {
     handleSearchSubmissions(page);
   } else {
-    handleFindAllSubmissions(page);
+    fetchSubmissions(page);
   }
 }, [page, isSearchActive]);
 
@@ -367,9 +367,10 @@ const handleSearchSubmissions = (currentPage = 1) => {
               <button type="submit" className="AddSubmission">
                 {isEditMode ? "Update Submission" : "Add Submission"}
               </button>
-              <button type="button" onClick={handleBack} className="backButton">
+              {/* <button type="button" onClick={handleBack} className="backButton">
                 Back
-              </button>
+              </button> */}
+              <button onClick={() => setShowForm(false)} className="Submission-cancle-button">Cancel</button>
             </div>
           </form>
         </div>
@@ -423,7 +424,8 @@ const handleSearchSubmissions = (currentPage = 1) => {
       )}
       {showSubmissions && submissions.length > 0 && (
         <div>
-          <h1 className="handleSubmissions">All Submissions</h1>
+          {/* <h1 className="handleSubmissions">All Submissions</h1> */}
+          <h1 className="handleSubmissions">{isSearchActive ? "Search Results" : "All Submissions"}</h1>
           <table className="submission-table">
             <thead>
               <tr>

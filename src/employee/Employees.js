@@ -31,7 +31,7 @@ const Employees = () => {
     if (isSearchActive) {
       handleSearchEmployees(page);
     } else {
-      handleFindAllEmployees(page);
+      fetchEmployees(page);
     }
   }, [page, isSearchActive]);
 
@@ -214,13 +214,13 @@ const Employees = () => {
               <button type="submit" className="employee-submit">
                 {isEditMode ? "Update Employee" : "Add Employee"}
               </button>
-              <button
+              {/* <button
                 type="button"
                 onClick={handleBack}
                 className="employee-back-button"
               >
                 Back
-              </button>
+              </button> */}
               <button
                 onClick={() => setShowForm(false)}
                 className="employee-cancel-button"

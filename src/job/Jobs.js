@@ -33,17 +33,12 @@ const Jobs = () => {
   const [totalCount, setTotalCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [isSearchActive, setIsSearchActive] = useState(false); // New state to manage search status
-
-  // useEffect(() => {
-  //   setShowJobs(false)
-  // }, []);
+  
 
   useEffect(() => {
     if (isSearchActive) {
       handleSearchJobs(page);
-    } else {
-      handleFindAllJobs(page);
-    }
+    } 
   }, [page, isSearchActive]);
 
   //Handle input change
@@ -210,6 +205,7 @@ const Jobs = () => {
     setEditMode(true);
     setCurrentJobId(job.JobID);
     setShowForm(true);
+    setShowJobs(false);
   };
   const handleBack = () => {
     navigate("/dashboard"); // Adjust this route as needed
@@ -221,46 +217,10 @@ const Jobs = () => {
     }
   };
   // Calculate total pages
-  // const totalPages = Math.ceil(totalCount / limit);
   const totalPages = Math.max(1, Math.ceil(totalCount / limit));
   return (
-    <div className="ats-container">
-      <button onClick={handleBack} className="back-button">
-        Back
-      </button>
-      <button
-        onClick={() => {
-          setShowForm(true);
-          setEditMode(false);
-        }}
-        className="job-button"
-      >
-        Add Job
-      </button>
-      <button onClick={() =>{
-        // setIsSearchActive(false); // Ensure pagination is reset
-        // setShowSearch(false); // Hide search input
-        handleFindAllJobs(page)}} className="job-button">
-        Find All Job
-      </button>
-      <button onClick={() => setShowSearch(!showSearch)} className="job-button">
-        Search Job
-      </button>
-      {showSearch && (
-      <div className="job-header-right">
-          <input
-            type="text"
-            placeholder="Search jobs..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="job-Search-text"
-          />
-          <button onClick={() =>{
-            setIsSearchActive(true); // Set search active
-            handleSearchJobs(page)}} className="job-Search-button">Search</button>
-        </div>
-      )}
-      {showForm && (
+    <div>
+      {showForm ? (
         <div>
           <h1 className="header">{editMode ? "Edit Job" : "Add New Job"}</h1>
           <form onSubmit={handleJob} className="form-page">
@@ -374,24 +334,65 @@ const Jobs = () => {
               className="date-styles"
               required
             />
-            <br />
+            <div>
             <button type="submit" className="add-button">
               {editMode ? "Update Job" : "Add Job"}
             </button>
             <button
               onClick={() => setShowForm(false)}
-              className="cancle-button"
+              className="cancel-button-jobs"
             >
               Cancel
             </button>
+            </div>
           </form>
         </div>
-      )}
-      {loading ? (
-        <p></p>
+      // )}
+      // {loading ? (
+      //   <p></p>
       ) : (
-      // {jobs.length > 0 && showJobs && (
-        showJobs && (
+        <div className="ats-container">
+        <button onClick={handleBack} className="back-button">
+        Back
+      </button>
+      <button
+        onClick={() => {
+          setShowForm(true);
+          setEditMode(false);
+        }}
+        className="job-button"
+      >
+        Add Job
+      </button>
+      <button onClick={() =>{
+        // setIsSearchActive(false); // Ensure pagination is reset
+        // setShowSearch(false); // Hide search input
+        handleFindAllJobs(page)}} className="job-button">
+        Find All Job
+      </button>
+      <button onClick={() => setShowSearch(!showSearch)} className="job-button">
+        Search Job
+      </button>
+      </div>
+      )}
+      {showSearch && (
+      <div className="job-header-right">
+          <input
+            type="text"
+            placeholder="Search jobs..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="job-Search-text"
+          />
+          <button onClick={() =>{
+            setIsSearchActive(true); // Set search active
+            handleSearchJobs(page)}} className="job-Search-button">Search</button>
+          
+        </div>       
+      )}
+      
+      {/* {jobs.length > 0 && showJobs && ( */}
+       { showJobs &&  jobs.length > 0 && (
         <div>
           <h1 className="title">{isSearchActive ? "Search Results" : "All Jobs"}</h1>
           <table className="job-table">
@@ -463,7 +464,6 @@ const Jobs = () => {
             </button>
           </div>
         </div>
-        )
       )}
     </div>
   );
