@@ -567,10 +567,16 @@ app.get("/jobs/search", (req, res) => {
   if (searchValue) {
     const searchPattern = `%${searchValue}%`;
     conditions.push(
-      "(JobTitle LIKE ? OR Description LIKE ? OR Department LIKE ? OR Location LIKE ? OR EmploymentType LIKE ?)"
+      "JobID LIKE ? OR JobTitle LIKE ? OR Description LIKE ? OR Department LIKE ? OR Location LIKE ? OR EmploymentType LIKE ? OR Salary LIKE ? OR RequiredExperience LIKE ? OR SkillsRequired LIKE ? OR Openings LIKE ? OR Status LIKE ?"
     );
 
     queryParams.push(
+      searchPattern,
+      searchPattern,
+      searchPattern,
+      searchPattern,
+      searchPattern,
+      searchPattern,
       searchPattern,
       searchPattern,
       searchPattern,
@@ -590,6 +596,8 @@ app.get("/jobs/search", (req, res) => {
   if (conditions.length > 0) {
     countQuery += " WHERE " + conditions.join(" AND ");
   }
+  // Only pass the parameters relevant to the conditions, not the LIMIT and OFFSET
+  const countQueryParams = queryParams.slice(0, queryParams.length - 2);
   connection.query(query, queryParams, (err, results) => {
     if (err) {
       console.error("error quering the database:", err);
@@ -602,10 +610,7 @@ app.get("/jobs/search", (req, res) => {
     // console.log("Retrieved job data:", results);
     // res.json(results);
     // Get the total count of matching jobs
-    connection.query(
-      countQuery,
-      queryParams.slice(0, conditions.length * 5),
-      (err, countResults) => {
+    connection.query(countQuery, countQueryParams, (err, countResults) => {
         if (err) {
           console.error("Error querying the count:", err);
           return res.status(500).send("Error querying the count");
@@ -719,9 +724,11 @@ app.get("/requisitions/search", (req, res) => {
   if (searchValue) {
     const searchPattern = `%${searchValue}%`;
     conditions.push(
-      "(JobID LIKE ? OR JobTitle LIKE ? OR Department LIKE ? OR HiringManager LIKE ? OR CreatedBy LIKE ? OR Status LIKE ? OR Priority LIKE ? OR PositionType LIKE ? OR EducationRequirements LIKE ? OR ExperienceRequirements LIKE ? OR JobDescription LIKE ?)"
+      "(RequisitionID LIKE ? OR JobID LIKE ? OR JobTitle LIKE ? OR Department LIKE ? OR HiringManager LIKE ? OR CreatedBy LIKE ? OR Status LIKE ? OR Priority LIKE ? OR PositionType LIKE ? OR RequiredSkills LIKE ? OR EducationRequirements LIKE ? OR ExperienceRequirements LIKE ? OR JobDescription LIKE ?)"
     );
     queryParams.push(
+      searchPattern,
+      searchPattern,
       searchPattern,
       searchPattern,
       searchPattern,
