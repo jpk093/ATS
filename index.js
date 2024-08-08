@@ -611,22 +611,21 @@ app.get("/jobs/search", (req, res) => {
     // res.json(results);
     // Get the total count of matching jobs
     connection.query(countQuery, countQueryParams, (err, countResults) => {
-        if (err) {
-          console.error("Error querying the count:", err);
-          return res.status(500).send("Error querying the count");
-        }
-
-        // Log the retrieved data to the console
-        console.log("Retrieved job data:", results);
-        console.log("Total count:", countResults[0].count);
-
-        // Respond with job data and total count
-        res.json({
-          jobs: results,
-          totalCount: countResults[0].count,
-        });
+      if (err) {
+        console.error("Error querying the count:", err);
+        return res.status(500).send("Error querying the count");
       }
-    );
+
+      // Log the retrieved data to the console
+      console.log("Retrieved job data:", results);
+      console.log("Total count:", countResults[0].count);
+
+      // Respond with job data and total count
+      res.json({
+        jobs: results,
+        totalCount: countResults[0].count,
+      });
+    });
   });
 });
 
@@ -1221,7 +1220,7 @@ app.get("/submissions/search", (req, res) => {
   if (conditions.length > 0) {
     countQuery += " WHERE " + conditions.join(" AND ");
   }
-    // Only pass the parameters relevant to the conditions, not the LIMIT and OFFSET
+  // Only pass the parameters relevant to the conditions, not the LIMIT and OFFSET
   const countQueryParams = queryParams.slice(0, queryParams.length - 2);
   connection.query(query, queryParams, (err, results) => {
     if (err) {
@@ -1229,22 +1228,21 @@ app.get("/submissions/search", (req, res) => {
       return res.status(500).send("Error querying the database");
     }
     connection.query(countQuery, countQueryParams, (err, countResults) => {
-        if (err) {
-          console.error("Error querying the count:", err);
-          return res.status(500).send("Error querying the count");
-        }
-
-        // Log the retrieved data to the console
-        console.log("Retrieved submissions data:", results);
-        console.log("Total count:", countResults[0].count);
-
-        // Respond with job data and total count
-        res.json({
-          submissions: results,
-          totalCount: countResults[0].count,
-        });
+      if (err) {
+        console.error("Error querying the count:", err);
+        return res.status(500).send("Error querying the count");
       }
-    );
+
+      // Log the retrieved data to the console
+      console.log("Retrieved submissions data:", results);
+      console.log("Total count:", countResults[0].count);
+
+      // Respond with job data and total count
+      res.json({
+        submissions: results,
+        totalCount: countResults[0].count,
+      });
+    });
   });
 });
 app.put("/submissions/:id", (req, res) => {
@@ -1462,22 +1460,21 @@ app.get("/interviews/search", (req, res) => {
       return res.status(500).send("Error querying the database");
     }
     connection.query(countQuery, countQueryParams, (err, countResults) => {
-        if (err) {
-          console.error("Error querying the count:", err);
-          return res.status(500).send("Error querying the count");
-        }
-
-        // Log the retrieved data to the console
-        console.log("Retrieved interviews data:", results);
-        console.log("Total count:", countResults[0].count);
-
-        // Respond with job data and total count
-        res.json({
-          interviews: results,
-          totalCount: countResults[0].count,
-        });
+      if (err) {
+        console.error("Error querying the count:", err);
+        return res.status(500).send("Error querying the count");
       }
-    );
+
+      // Log the retrieved data to the console
+      console.log("Retrieved interviews data:", results);
+      console.log("Total count:", countResults[0].count);
+
+      // Respond with job data and total count
+      res.json({
+        interviews: results,
+        totalCount: countResults[0].count,
+      });
+    });
   });
 });
 
@@ -1571,12 +1568,10 @@ app.post("/employees", (req, res) => {
       console.error("Error creating employee:", err);
       return res.status(500).json({ error: "Failed to create employee." });
     }
-    res
-      .status(201)
-      .json({
-        message: "Employee created successfully!",
-        employeeId: results.insertId,
-      });
+    res.status(201).json({
+      message: "Employee created successfully!",
+      employeeId: results.insertId,
+    });
   });
 });
 app.get("/employees", (req, res) => {
@@ -1641,31 +1636,30 @@ app.get("/employees/search", (req, res) => {
   if (conditions.length > 0) {
     countQuery += " WHERE " + conditions.join(" AND ");
   }
-   // Only pass the parameters relevant to the conditions, not the LIMIT and OFFSET
-   const countQueryParams = queryParams.slice(0, queryParams.length - 2);
-   
+  // Only pass the parameters relevant to the conditions, not the LIMIT and OFFSET
+  const countQueryParams = queryParams.slice(0, queryParams.length - 2);
+
   connection.query(query, queryParams, (err, results) => {
     if (err) {
       console.error("error quering the database:", err);
       return res.status(500).send("Error querying the database");
     }
     connection.query(countQuery, countQueryParams, (err, countResults) => {
-        if (err) {
-          console.error("Error querying the count:", err);
-          return res.status(500).send("Error querying the count");
-        }
-
-        // Log the retrieved data to the console
-        console.log("Retrieved employees data:", results);
-        console.log("Total count:", countResults[0].count);
-
-        // Respond with job data and total count
-        res.json({
-          employees: results,
-          totalCount: countResults[0].count,
-        });
+      if (err) {
+        console.error("Error querying the count:", err);
+        return res.status(500).send("Error querying the count");
       }
-    );
+
+      // Log the retrieved data to the console
+      console.log("Retrieved employees data:", results);
+      console.log("Total count:", countResults[0].count);
+
+      // Respond with job data and total count
+      res.json({
+        employees: results,
+        totalCount: countResults[0].count,
+      });
+    });
   });
 });
 app.put("/employees/:id", (req, res) => {
@@ -1741,12 +1735,10 @@ app.post("/assignments", (req, res) => {
       console.error("Error creating assignment:", err);
       return res.status(500).json({ error: "Failed to create assignment." });
     }
-    res
-      .status(201)
-      .json({
-        message: "Assignment created successfully!",
-        assignmentId: results.insertId,
-      });
+    res.status(201).json({
+      message: "Assignment created successfully!",
+      assignmentId: results.insertId,
+    });
   });
 });
 
@@ -1827,22 +1819,21 @@ app.get("/assignments/search", (req, res) => {
       return res.status(500).send("Error querying the database");
     }
     connection.query(countQuery, countQueryParams, (err, countResults) => {
-        if (err) {
-          console.error("Error querying the count:", err);
-          return res.status(500).send("Error querying the count");
-        }
-
-        // Log the retrieved data to the console
-        console.log("Retrieved assignments data:", results);
-        console.log("Total count:", countResults[0].count);
-
-        // Respond with job data and total count
-        res.json({
-          assignments: results,
-          totalCount: countResults[0].count,
-        });
+      if (err) {
+        console.error("Error querying the count:", err);
+        return res.status(500).send("Error querying the count");
       }
-    );
+
+      // Log the retrieved data to the console
+      console.log("Retrieved assignments data:", results);
+      console.log("Total count:", countResults[0].count);
+
+      // Respond with job data and total count
+      res.json({
+        assignments: results,
+        totalCount: countResults[0].count,
+      });
+    });
   });
 });
 //Update Assignment
@@ -1898,6 +1889,506 @@ app.delete("/assignments/:id", (req, res) => {
       return res.status(500).json({ error: "Failed to delete assignment." });
     }
     res.status(200).json({ message: "Assignment deleted successfully!" });
+  });
+});
+
+app.post("/tasks", (req, res) => {
+  const {
+    Title,
+    TaskCategory,
+    CreatedBy,
+    DueDate,
+    Priority,
+    Status,
+    Reminder,
+    AssignedTo,
+  } = req.body;
+
+  // SQL query to insert a new task into the tasks table
+  const query = `
+    INSERT INTO tasks (
+      Title,
+      TaskCategory,
+      CreatedBy,
+      DueDate,
+      Priority,
+      Status,
+      Reminder,
+      AssignedTo
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?);
+  `;
+  // Parameterized values for the query
+  const values = [
+    Title,
+    TaskCategory,
+    CreatedBy,
+    DueDate,
+    Priority,
+    Status,
+    Reminder,
+    AssignedTo,
+  ];
+  // Execute the query
+  connection.query(query, values, (err, results) => {
+    if (err) {
+      console.error("Error inserting task:", err);
+      return res.status(500).json({ error: "Failed to create task." });
+    }
+    console.log("Task created successfully:", results);
+    res
+      .status(200)
+      .json({
+        message: "Task created successfully!",
+        taskId: results.insertId,
+      });
+  });
+});
+
+app.get("/tasks/all", (req, res) => {
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 10;
+  const offset = (page - 1) * limit;
+
+  const query = `SELECT * FROM tasks LIMIT ? OFFSET ?`;
+  const queryParams = [limit, offset];
+
+  connection.query(query, queryParams, (err, results) => {
+    if (err) {
+      console.error("Error fetching tasks:", err);
+      return res.status(500).json({ error: "Failed to fetch tasks." });
+    }
+
+    const countQuery = "SELECT COUNT(*) as count FROM tasks";
+    connection.query(countQuery, (err, countResults) => {
+      if (err) {
+        console.error("Error fetching task count:", err);
+        return res.status(500).json({ error: "Failed to fetch task count." });
+      }
+      const totalCount = countResults[0].count;
+      res.status(200).json({ tasks: results, totalCount: totalCount });
+    });
+  });
+});
+app.put("/tasks/:id", (req, res) => {
+  const taskId = req.params.id;
+  const {
+    Title,
+    TaskCategory,
+    CreatedBy,
+    DueDate,
+    Priority,
+    Status,
+    Reminder,
+    AssignedTo,
+  } = req.body;
+
+  if (!Title || !CreatedBy || !DueDate || !Priority || !Status) {
+    return res.status(400).json({ error: "All required fields must be provided." });
+  }
+
+  const query = `UPDATE tasks SET 
+    Title = ?,
+    TaskCategory = ?,
+    CreatedBy = ?,
+    DueDate = ?,
+    Priority = ?,
+    Status = ?,
+    Reminder = ?,
+    AssignedTo = ?
+    WHERE TaskID = ?;
+  `;
+
+  const values = [
+    Title,
+    TaskCategory,
+    CreatedBy,
+    DueDate,
+    Priority,
+    Status,
+    Reminder,
+    AssignedTo,
+    taskId,
+  ];
+  connection.query(query, values, (err, results) => {
+    if (err) {
+      console.error("Error updating task:", err);
+      return res.status(500).json({ error: "Failed to update task." });
+    }
+    console.log("Task updated successfully:", results);
+    res.status(200).json({ message: "Task updated successfully!" });
+  });
+});
+app.delete("/tasks/:id", (req, res) => {
+  const taskId = req.params.id;
+  const query = "DELETE FROM tasks WHERE TaskID = ?";
+  connection.query(query, [taskId], (err, results) => {
+    if (err) {
+      console.error("Error deleting task:", err);
+      return res.status(500).json({ error: "Failed to delete task." });
+    }
+    console.log("Task deleted successfully:", results);
+    res.status(200).json({ message: "Task deleted successfully!" });
+  });
+});
+app.get("/tasks/search", (req, res) => {
+  const { searchValue, page, pageSize } = req.query;
+  const pageNumber = parseInt(page) || 1;
+  const resultsPerPage = parseInt(pageSize) || 10;
+  const offset = (pageNumber - 1) * resultsPerPage;
+
+  let query = "SELECT * FROM tasks";
+  const queryParams = [];
+  let conditions = [];
+
+  if (searchValue) {
+    const searchPattern = `%${searchValue}%`;
+    conditions.push(
+      "TaskID LIKE ? OR Title LIKE ? OR TaskCategory LIKE ? OR CreatedBy LIKE ? OR Priority LIKE ? OR Status LIKE ? OR Reminder LIKE ? OR AssignedTo LIKE ?" 
+    );
+    queryParams.push(
+      searchPattern,
+      searchPattern,
+      searchPattern,
+      searchPattern,
+      searchPattern,
+      searchPattern,
+      searchPattern,
+      searchPattern
+    );
+  }
+
+  if (conditions.length > 0) {
+    query += " WHERE " + conditions.join(" AND ");
+  }
+  query += " LIMIT ? OFFSET ?";
+  queryParams.push(resultsPerPage, offset);
+
+  let countQuery = "SELECT COUNT(*) AS count FROM tasks";
+  if (conditions.length > 0) {
+    countQuery += " WHERE " + conditions.join(" AND ");
+  }
+  const countQueryParams = queryParams.slice(0, queryParams.length - 2);
+
+  connection.query(query, queryParams, (err, results) => {
+    if (err) {
+      console.error("Error querying the database:", err);
+      return res.status(500).send("Error querying the database");
+    }
+
+    connection.query(countQuery, countQueryParams, (err, countResults) => {
+      if (err) {
+        console.error("Error querying the count:", err);
+        return res.status(500).send("Error querying the count");
+      }
+
+      console.log("Retrieved task data:", results);
+      console.log("Total count:", countResults[0].count);
+
+      res.json({
+        tasks: results,
+        totalCount: countResults[0].count,
+      });
+    });
+  });
+});
+
+app.post("/onboarding", (req, res) => {
+  const {
+    FirstName,
+    LastName,
+    Email,
+    Mobile,
+    Workflow,
+    Initiator,
+    InitiatedOn,
+    HireDate,
+    Status,
+    AssignedTo,
+    Progress 
+  } = req.body;
+
+  // SQL query to insert a new onboarding entry into the onboarding table
+  const query = `
+    INSERT INTO onboarding (
+      FirstName,
+      LastName,
+      Email,
+      Mobile,
+      Workflow,
+      Initiator,
+      InitiatedOn,
+      HireDate,
+      Status,
+      AssignedTo,
+      Progress
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+  `;
+  
+  // Parameterized values for the query
+  const values = [
+    FirstName,
+    LastName,
+    Email,
+    Mobile,
+    Workflow,
+    Initiator,
+    InitiatedOn,
+    HireDate,
+    Status,
+    AssignedTo,
+    Progress 
+  ];
+  
+  // Execute the query
+  connection.query(query, values, (err, results) => {
+    if (err) {
+      console.error("Error inserting onboarding data:", err);
+      return res.status(500).json({ error: "Failed to create onboarding entry." });
+    }
+    console.log("Onboarding entry created successfully:", results);
+    res.status(200).json({
+      message: "Onboarding entry created successfully!",
+      onboardingId: results.insertId
+    });
+  });
+});
+
+app.get("/onboarding/all", (req, res) => {
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 10;
+  const offset = (page - 1) * limit;
+
+  const query = `SELECT * FROM onboarding LIMIT ? OFFSET ?`;
+  const queryParams = [limit, offset];
+
+  connection.query(query, queryParams, (err, results) => {
+    if (err) {
+      console.error("Error fetching onboarding entries:", err);
+      return res.status(500).json({ error: "Failed to fetch onboarding entries." });
+    }
+
+    const countQuery = "SELECT COUNT(*) as count FROM onboarding";
+    connection.query(countQuery, (err, countResults) => {
+      if (err) {
+        console.error("Error fetching onboarding count:", err);
+        return res.status(500).json({ error: "Failed to fetch onboarding count." });
+      }
+      const totalCount = countResults[0].count;
+      res.status(200).json({ onboarding: results, totalCount: totalCount });
+    });
+  });
+});
+app.put("/onboarding/:id", (req, res) => {
+  const onboardingId = req.params.id;
+  const {
+    FirstName,
+    LastName,
+    Email,
+    Mobile,
+    Workflow,
+    Initiator,
+    InitiatedOn,
+    HireDate,
+    Status,
+    AssignedTo,
+    Progress 
+  } = req.body;
+
+  if (!FirstName || !LastName || !Email) {
+    return res.status(400).json({ error: "FirstName, LastName, and Email are required fields." });
+  }
+
+  const query = `UPDATE onboarding SET 
+    FirstName = ?,
+    LastName = ?,
+    Email = ?,
+    Mobile = ?,
+    Workflow = ?,
+    Initiator = ?,
+    InitiatedOn = ?,
+    HireDate = ?,
+    Status = ?,
+    AssignedTo = ?,
+    Progress = ?
+    WHERE Code = ?;
+  `;
+
+  const values = [
+    FirstName,
+    LastName,
+    Email,
+    Mobile,
+    Workflow,
+    Initiator,
+    InitiatedOn,
+    HireDate,
+    Status,
+    AssignedTo,
+    Progress, 
+    onboardingId
+  ];
+
+  connection.query(query, values, (err, results) => {
+    if (err) {
+      console.error("Error updating onboarding entry:", err);
+      return res.status(500).json({ error: "Failed to update onboarding entry." });
+    }
+    console.log("Onboarding entry updated successfully:", results);
+    res.status(200).json({ message: "Onboarding entry updated successfully!" });
+  });
+});
+
+
+app.delete("/onboarding/:id", (req, res) => {
+  const onboardingId = req.params.id;
+  const query = "DELETE FROM onboarding WHERE Code = ?";
+  connection.query(query, [onboardingId], (err, results) => {
+    if (err) {
+      console.error("Error deleting onboarding entry:", err);
+      return res.status(500).json({ error: "Failed to delete onboarding entry." });
+    }
+    console.log("Onboarding entry deleted successfully:", results);
+    res.status(200).json({ message: "Onboarding entry deleted successfully!" });
+  });
+});
+app.get("/onboarding/search", (req, res) => {
+  const { searchValue, page, pageSize } = req.query;
+  const pageNumber = parseInt(page) || 1;
+  const resultsPerPage = parseInt(pageSize) || 10;
+  const offset = (pageNumber - 1) * resultsPerPage;
+
+  let query = "SELECT * FROM onboarding";
+  const queryParams = [];
+  let conditions = [];
+
+  if (searchValue) {
+    const searchPattern = `%${searchValue}%`;
+    conditions.push(
+      "FirstName LIKE ? OR LastName LIKE ? OR Email LIKE ? OR Mobile LIKE ? OR Workflow LIKE ? OR Initiator LIKE ? OR InitiatedOn LIKE ?  OR Status LIKE ?  OR AssignedTo LIKE ? OR Progress LIKE ?" 
+    );
+    queryParams.push(
+      searchPattern,
+      searchPattern,
+      searchPattern,
+      searchPattern,
+      searchPattern,
+      searchPattern,
+      searchPattern,
+      searchPattern,
+      searchPattern,
+      searchPattern 
+    );
+  }
+
+  if (conditions.length > 0) {
+    query += " WHERE " + conditions.join(" AND ");
+  }
+  query += " LIMIT ? OFFSET ?";
+  queryParams.push(resultsPerPage, offset);
+
+  let countQuery = "SELECT COUNT(*) AS count FROM onboarding";
+  if (conditions.length > 0) {
+    countQuery += " WHERE " + conditions.join(" AND ");
+  }
+  const countQueryParams = queryParams.slice(0, queryParams.length - 2);
+
+  connection.query(query, queryParams, (err, results) => {
+    if (err) {
+      console.error("Error querying the database:", err);
+      return res.status(500).send("Error querying the database");
+    }
+
+    connection.query(countQuery, countQueryParams, (err, countResults) => {
+      if (err) {
+        console.error("Error querying the count:", err);
+        return res.status(500).send("Error querying the count");
+      }
+
+      console.log("Retrieved onboarding data:", results);
+      console.log("Total count:", countResults[0].count);
+
+      res.json({
+        onboarding: results,
+        totalCount: countResults[0].count
+      });
+    });
+  });
+});
+
+app.get("/jobs/:jobId", (req, res) => {
+  const jobId = req.params.jobId;
+  console.log(jobId);
+  const query = "select * from jobs where JobID = ?";
+  const queryParams = [jobId];
+  connection.query(query, queryParams, (err, results) => {
+    if (err) {
+      console.error("Error fetching job details:", err);
+      return res.status(500).json({ error: "Failed to fetch job details." });
+    }
+    if (results.length === 0) {
+      return res.status(404).json({ error: "Job not found." });
+    }
+    res.status(200).json(results[0]);
+  });
+});
+
+app.get("/candidates/:candidateId", (req, res) => {
+  const candidateId = req.params.candidateId;
+  console.log("Received request for Candidate ID:", candidateId);
+  const query = `SELECT * FROM candidates WHERE CandidateID = ?;`;
+
+  // Execute the query
+  connection.query(query, [candidateId], (err, results) => {
+    if (err) {
+      console.error("Error fetching candidate details:", err);
+      return res
+        .status(500)
+        .json({ error: "Failed to fetch candidate details." });
+    }
+
+    if (results.length === 0) {
+      return res.status(404).json({ error: "Candidate not found." });
+    }
+    // Send the candidate details as a response
+    res.status(200).json(results[0]);
+  });
+});
+app.get("/submissions/:submissionId", (req, res) => {
+  const submissionId = req.params.submissionId;
+  console.log("Received request for Submission ID:", submissionId);
+  const query = "SELECT * FROM submissions WHERE SubmissionID = ?;";
+
+  connection.query(query, [submissionId], (err, results) => {
+    if (err) {
+      console.error("Error fetching submission details:", err);
+      return res
+        .status(500)
+        .json({ error: "Failed to fetch submission details." });
+    }
+    if (results.length === 0) {
+      return res.status(404).json({ error: "Submission not found." });
+    }
+    // Send the submission details as a response
+    res.status(200).json(results[0]);
+  });
+});
+app.get("/employees/:employeeId", (req, res) => {
+  const employeeId = req.params.employeeId;
+  console.log("Received request for employees ID:", employeeId);
+  const query = "SELECT * FROM employees WHERE EmployeeID = ?;";
+
+  connection.query(query, [employeeId], (err, results) => {
+    if (err) {
+      console.error("Error fetching employees details:", err);
+      return res
+        .status(500)
+        .json({ error: "Failed to fetch employees details." });
+    }
+    if (results.length === 0) {
+      return res.status(404).json({ error: "employees not found." });
+    }
+    // Send the submission details as a response
+    res.status(200).json(results[0]);
   });
 });
 app.listen(3001, function () {
