@@ -3,6 +3,7 @@ import axios from "axios";
 import { appUrl } from "../signUp/SignUp";
 import { useNavigate } from "react-router-dom";
 import "./Submissions.css";
+import Candidates from "../candidates/Candidates";
 
 const Submissions = () => {
   const [formData, setFormData] = useState({
@@ -140,6 +141,7 @@ const handleSearchSubmissions = (currentPage = 1) => {
     const date = new Date(dateString);
     return date.toLocaleDateString("en-CA");
   };
+
   //Update an existing submission
   const handleUpdateSubmission = async (submissionId) => {
     try {
@@ -204,6 +206,14 @@ const handleSearchSubmissions = (currentPage = 1) => {
       setPage(newPage);
     }
   };
+  const handleJobDetails = (jobId) => {
+    console.log("Job ID:", jobId); // Add this line
+    navigate(`/jobs/${jobId}`);
+  };
+  const handleCandidateDetails=(candidateId) => {
+    console.log("Candidate ID:", candidateId); // Add this line
+    navigate(`/candidates/${candidateId}`);
+  }
   return (
     <div>
       {showForm ? (
@@ -456,8 +466,10 @@ const handleSearchSubmissions = (currentPage = 1) => {
                   <td>{submission.SubmissionID}</td>
                   <td>{submission.FirstName}</td>
                   <td>{submission.LastName}</td>
-                  <td>{submission.CandidateID}</td>
-                  <td>{submission.JobID}</td>
+                  <td onClick={() => handleCandidateDetails(submission.CandidateID)} style={{ cursor: 'pointer', color: 'blue' }}>{submission.CandidateID}</td>
+                  {/* <td>{submission.CandidateID}</td> */}
+                  <td onClick={() => handleJobDetails(submission.JobID)} style={{ cursor: 'pointer', color: 'blue' }}>{submission.JobID}</td>
+                  {/* <td>{submission.JobID}</td> */}
                   <td>{submission.JobTitle}</td>
                   <td>{submission.Client}</td>
                   <td>{formatDate(submission.SubmittedDate)}</td>

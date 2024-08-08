@@ -30,7 +30,8 @@ const Jobs = () => {
   const navigate = useNavigate();
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
-  const [totalCount, setTotalCount] = useState(0);
+  // const [totalCount, setTotalCount] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
   const [loading, setLoading] = useState(true);
   const [isSearchActive, setIsSearchActive] = useState(false); // New state to manage search status
   
@@ -101,7 +102,7 @@ const Jobs = () => {
             ClosingDate: "",
           });
           setShowForm(false);
-          handleFindAllJobs(page);
+          // handleFindAllJobs(page);
         })
         .catch((error) => {
           console.error("Error creating job:", error);
@@ -124,7 +125,8 @@ const Jobs = () => {
         setJobs(response.data.jobs || []);
         setShowJobs(true);
         setPage(currentPage);
-        setTotalCount(response.data.totalCount || 0); // Update total jobs count
+        // setTotalPages(response.data.totalCount || 0); // Update total jobs count
+        setTotalPages(Math.ceil(response.data.totalCount / limit));
         setLoading(false);
       })
       .catch((error) => {
@@ -146,10 +148,11 @@ const Jobs = () => {
       console.log("Search Results:", response.data); // Check response
       setSearchResults(response.data.jobs || []); // Adjust based on response structure
       // setJobs(response.data);
+      setTotalPages(Math.ceil(response.data.totalCount / limit));
       setShowJobs(true);
       setPage(currentPage);
-      setTotalCount(response.data.totalCount || 0);
       setLoading(false);
+      // handleFindAllJobs(page);
     })
     .catch((error) =>{
       console.error("Error searching jobs:", error);
@@ -168,7 +171,7 @@ const Jobs = () => {
         alert("Job updated successfully!");
         setShowForm(false);
         setEditMode(false);
-        handleFindAllJobs(page);
+        // handleFindAllJobs(page);
       })
       .catch((error) => {
         console.error("Error updating jobs:", error);
@@ -211,13 +214,22 @@ const Jobs = () => {
     navigate("/dashboard"); // Adjust this route as needed
   };
   // Handle pagination
+  // const handlePageChange = (newPage) => {
+  //   if (newPage >= 1 && newPage <= totalPages) {
+  //     handleFindAllJobs(newPage);
+  //   }
+  // };
   const handlePageChange = (newPage) => {
     if (newPage >= 1 && newPage <= totalPages) {
-      handleFindAllJobs(newPage);
+      if (isSearchActive) {
+        handleSearchJobs(newPage); // For search results
+      } else {
+        handleFindAllJobs(newPage); // For all jobs
+      }
     }
   };
-  // Calculate total pages
-  const totalPages = Math.max(1, Math.ceil(totalCount / limit));
+  // // Calculate total pages
+  // const totalPages = Math.max(1, Math.ceil(totalCount / limit));
   return (
     <div>
       {showForm ? (
@@ -392,7 +404,7 @@ const Jobs = () => {
       )}
       
       {/* {jobs.length > 0 && showJobs && ( */}
-       { showJobs &&  jobs.length > 0 && (
+       { showJobs &&  (
         <div>
           <h1 className="title">{isSearchActive ? "Search Results" : "All Jobs"}</h1>
           <table className="job-table">

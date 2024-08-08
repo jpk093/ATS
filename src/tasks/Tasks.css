@@ -1,0 +1,83 @@
+.task-backButton{
+    margin-right: 20px;
+}
+.add-Task{
+    margin-right: 20px;
+}
+.viewTask{
+    margin-right: 20px;
+}
+.header-Task{
+    display: flex;
+    align-items: center;
+    justify-content: center; 
+}
+.task-input-styles{
+    margin-left: 20px;
+    width: 16vw;
+}
+.task-textarea-styles{
+    margin-left: 20px;
+    width: 17.0vw;
+    margin-bottom: -15px;
+}
+.inputTaskDate-styles{
+    width: 13.9vw;
+}
+.inputTask-Date-styles{
+    width: 15.4vw;
+}
+.CreationDate{
+    margin-left: 20px;
+}
+.DueDate{
+    margin-left: 20px;
+}
+.CompletionDate{
+    margin-left: 20px;
+}
+.task-select-styles{
+    width: 14.5vw;
+    height: 38px; 
+}
+.task-select-styles-reminder{
+    width: 13.2vw;
+    height: 38px; 
+}
+.Add-Task{
+    margin-left: 20px;
+}
+.task-cancle-button{
+    margin-left: 20px;
+}
+.task-search-button{
+    margin-left: 20px;
+}
+.labelReminder{
+    margin-left: 20px;
+}
+.title-Task{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.task-table{
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+.task-table th,
+  .task-table td {
+    padding: 8px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+    /* background-color: red; */
+  }
+
+.task-table th {
+  background-color: #f2f2f2;
+  font-weight: bold;
+}
+.delete-task-button{
+    margin-left: 20px;
+}

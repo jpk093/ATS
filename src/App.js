@@ -15,6 +15,12 @@ import Submissions from './submission/Submissions';
 import Interviews from './interview/Interviews';
 import Employees from './employee/Employees';
 import Assignments from './assignment/Assignments';
+import JobList from './List/JobList';
+import CandidateList from './List/candidatesList/CandidatesList';
+import SubmissionList from './List/submissionList/SubmissionList';
+import EmployeeList from './List/employeeList/EmployeeList';
+import Tasks from './tasks/Tasks';
+import Onboarding from './onboarding/Onboarding'
 
 function App(){
     return(
@@ -33,6 +39,12 @@ function App(){
                 <Route exact path="/interviews" element={<Private><Interviews/></Private>} />
                 <Route exact path="/employees" element={<Private><Employees/></Private>} />
                 <Route exact path="/assignments" element={<Private><Assignments/></Private>} />
+                <Route exact path="/tasks" element={<Private><Tasks/></Private>} />
+                <Route exact path="/onboarding" element={<Private><Onboarding/></Private>} />
+                <Route exact path="/jobs/:jobId" element={<Private><JobList/></Private>} />
+                <Route exact path="/candidates/:candidateId" element={<Private><CandidateList/></Private>} />
+                <Route exact path="/submissions/:submissionId" element={<Private><SubmissionList/></Private>} />
+                <Route exact path="/employees/:employeeId" element={<Private><EmployeeList/></Private>} />
                 
                 {/* <Route path="/notification" component={Notification} />
                 <Route path="/logout" component={Logout} /> */} 

@@ -1,0 +1,71 @@
+.AddOnboarding-button{
+    margin-left: 20px;
+}
+.FnndOnboarding-button{
+    margin-left: 20px;
+}
+.SearchOnboarding-button{
+    margin-left: 20px;
+}
+.header-Onboarding{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.onboarding-input-styles{
+    margin-left: 20px;
+    width: 16.2vw;
+}
+.onboarding-inputDate-styles{
+    width: 11.7vw;
+}
+.onboarding-inputDates-styles{
+    width: 12.6vw;
+}
+.onboarding-submit-button{
+    margin-left: 20px;
+}
+.onboarding-cancel-button{
+    margin-left: 20px;
+}
+.onboardinglabelDate{
+    margin-left: 20px;
+}
+.onboarding-labelStatus{
+    margin-left: 20px;
+}
+.onboarding-select-styles{
+    width: 14.8vw;
+    height: 38px; 
+}
+.handleSearchOnboarding-button{
+    margin-left: 20px;
+}
+.clearSearchOnboarding-button{
+    margin-left: 20px;
+}
+.onboardingsTitle{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.onboardings-table{
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    /* background-color: red; */
+}
+.onboardings-table th,
+  .onboardings-table td {
+    padding: 8px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+  }
+
+.onboardings-table th {
+  background-color: #f2f2f2;
+  font-weight: bold;
+}
+.handleDeleteOnboarding{
+    margin-left: 20px;
+}

@@ -3,6 +3,8 @@ import axios from "axios";
 import { appUrl } from "../signUp/SignUp";
 import { useNavigate } from "react-router-dom";
 import "./Requisitions.css";
+import JobList from "../List/JobList";
+import { Link } from 'react-router-dom';
 
 const Requisitions = () => {
   const [formData, setFormData] = useState({
@@ -35,6 +37,8 @@ const Requisitions = () => {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
   const [totalPages, setTotalPages] = useState(1);
+  const [selectedJob, setSelectedJob] = useState(null);
+  const [showJobModal, setShowJobModal] = useState(false);
   const navigate = useNavigate();
 
   // //Fetch all requisitions on component mount
@@ -204,7 +208,27 @@ const Requisitions = () => {
       setPage(newPage);
     }
   };
-
+  // const handleJobDetails = (jobId) => {
+  //   axios
+  //     .get(`${appUrl}/jobs/${jobId}`)
+  //     .then((response) => {
+  //       console.log("Job details:", response.data);
+  //       setSelectedJob(response.data); // Set the selected job details
+  //       setShowJobModal(true); // Show the job modal
+  //     })
+  //     .catch((error) => {
+  //       console.error("Error fetching job details:", error);
+  //     });
+  // };
+  // const closeModal = () => {
+  //   setShowJobModal(false);
+  //   setSelectedJob(null);
+  // };
+  const handleJobDetails = (jobId) => {
+    console.log("Job ID:", jobId); // Add this line
+    navigate(`/jobs/${jobId}`);
+  };
+  
   return (
     <div>
       {showForm ? (
@@ -458,7 +482,7 @@ const Requisitions = () => {
               // {requisitions.map((requisition, index) => (
                 <tr key={index}>
                   <td>{requisition.RequisitionID}</td>
-                  <td>{requisition.JobID}</td>
+                  <td onClick={() => handleJobDetails(requisition.JobID)} style={{ cursor: 'pointer', color: 'blue' }}>{requisition.JobID}</td>
                   <td>{requisition.JobTitle}</td>
                   <td>{requisition.Department}</td>
                   <td>{requisition.HiringManager}</td>

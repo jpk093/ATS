@@ -43,6 +43,8 @@ const Dashboard = () =>{
                 <Link to="/interviews">Interviews</Link>
                 <Link to="/employees">Employees</Link>
                 <Link to="/assignments">Assignments</Link>
+                <Link to="/tasks">Tasks</Link>
+                <Link to="/onboarding">Onboarding</Link>
                 
                 <button onClick={handleLogout} className='logout-page'>Logout</button>  
             </div>

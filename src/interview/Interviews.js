@@ -232,6 +232,11 @@ const formatTime = (timeString) => {
       setPage(newPage);
     }
   };
+  const handleSubmissionDetails = (submissionId) => {
+    console.log("Submission ID:", submissionId); // Add this line
+    navigate(`/submissions/${submissionId}`);
+  };
+  
   return (
     <div>
       {showForm ? (
@@ -508,7 +513,8 @@ const formatTime = (timeString) => {
                       <td>{interview.AccountName}</td>
                       <td>{interview.Interviewer}</td>
                       <td>{interview.InterviewStage}</td>
-                      <td>{interview.SubmissionID}</td>
+                      <td onClick={() => handleSubmissionDetails(interview.SubmissionID)} style={{ cursor: 'pointer', color: 'blue' }}>{interview.SubmissionID}</td>
+                      {/* <td>{interview.SubmissionID}</td> */}
                       <td>{interview.SubmissionStage}</td>
                       <td>{interview.EndClient}</td>
                       <td>{interview.InterviewRecipient}</td>

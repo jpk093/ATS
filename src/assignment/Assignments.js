@@ -172,6 +172,19 @@ const Assignments = () => {
       setPage(newPage);
     }
   };
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-CA");
+  };
+  const handleJobDetails = (jobId) => {
+    console.log("Job ID:", jobId); // Add this line
+    navigate(`/jobs/${jobId}`);
+  };
+  const handleEmployeeDetails = (employeeId) => {
+    console.log("Employee ID:", employeeId); // Add this line
+    navigate(`/employees/${employeeId}`);
+  };
+
   return (
     <div>
       {showForm ? (
@@ -374,14 +387,16 @@ const Assignments = () => {
                   {(isSearchActive ? searchResults : assignments).map((assignment, index) => (
                      <tr key={index}>
                       <td>{assignment.AssignmentID}</td>
-                      <td>{assignment.EmployeeID}</td>
+                      <td onClick={() => handleEmployeeDetails(assignment.EmployeeID)} style={{ cursor: 'pointer', color: 'blue' }}>{assignment.EmployeeID}</td>
+                      {/* <td>{assignment.EmployeeID}</td> */}
                       <td>{assignment.AssignmentTitle}</td>
-                      <td>{assignment.JobID}</td>
+                      <td onClick={() => handleJobDetails(assignment.JobID)} style={{ cursor: 'pointer', color: 'blue' }}>{assignment.JobID}</td>
+                      {/* <td>{assignment.JobID}</td> */}
                       <td>{assignment.ProjectName}</td>
                       <td>{assignment.ProjectType}</td>
                       <td>{assignment.Client}</td>
-                      <td>{assignment.StartDate}</td>
-                      <td>{assignment.EndDate}</td>
+                      <td>{formatDate(assignment.StartDate)}</td>
+                      <td>{formatDate(assignment.EndDate)}</td>
                       <td>{assignment.Status}</td>
                       <td>{assignment.WorkLocationCity}</td>
                       <td>{assignment.WorkLocationState}</td>

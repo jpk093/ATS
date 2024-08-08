@@ -1,0 +1,26 @@
+.SubmissionDetails-table{
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    /* background-color: red; */
+}
+.SubmissionDetails-table th,
+  .SubmissionDetails-table td {
+    padding: 8px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+  }
+
+.SubmissionDetails-table th {
+  background-color: #f2f2f2;
+  font-weight: bold;
+}
+/* .delete-submission-button{
+    margin-left: 20px;
+} */
+.update-submission-button{
+    margin-right: 90px;
+} 
+ .delete-submission-button{
+    margin-left: -79px;
+ }
