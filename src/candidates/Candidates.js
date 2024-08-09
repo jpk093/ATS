@@ -41,8 +41,10 @@ const Candidates = () => {
 
   const fetchCandidates = async () => {
     try {
-      const response = await axios.get(`${appUrl}/candidates?page=${page}&limit=${limit}`);
-      setCandidates(response.data.candidates); 
+      const response = await axios.get(
+        `${appUrl}/candidates?page=${page}&limit=${limit}`
+      );
+      setCandidates(response.data.candidates);
       setTotalPages(Math.ceil(response.data.totalCount / limit));
       setLoading(false);
     } catch (error) {
@@ -51,46 +53,61 @@ const Candidates = () => {
     }
   };
 
-  const  handleSearchCandidates = (currentPage = 1) => {
+  const handleSearchCandidates = (currentPage = 1) => {
     setLoading(true);
-    axios.get(`${appUrl}/candidates/search`, {
-      params: {
-        searchValue: searchQuery,
-        page: currentPage,
-        pageSize: limit,
-      },
-  })
-  .then((response) => {
-      console.log("Search Results:", response.data); // Check response structure
-      setSearchResults(response.data.candidates || []); // Adjust based on response structure
-      setTotalPages(Math.ceil(response.data.totalCount / limit));
-      setShowCandidates(true); // Show candidates if not already visible
-      setPage(currentPage); // Set current page
-      setLoading(false);
-  })
-  .catch((error) => {
-    console.error("Error searching candidates:", error);
-    setLoading(false); // Set loading state to false
-  });
-}
-const handleChange = (e) => {
-  const { name, value } = e.target;
-  setFormData((prevState) => ({ ...prevState, [name]: value }));
-};
-  // const handleFileChange = (e) => {
-  //   const file = e.target.files[0];
-  //   setFormData({
-  //     ...formData,
-  //     Resume: file,
-  //   });
-  // };
+    axios
+      .get(`${appUrl}/candidates/search`, {
+        params: {
+          searchValue: searchQuery,
+          page: currentPage,
+          pageSize: limit,
+        },
+      })
+      .then((response) => {
+        console.log("Search Results:", response.data); // Check response structure
+        setSearchResults(response.data.candidates || []); // Adjust based on response structure
+        setTotalPages(Math.ceil(response.data.totalCount / limit));
+        setShowCandidates(true); // Show candidates if not already visible
+        setPage(currentPage); // Set current page
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error("Error searching candidates:", error);
+        setLoading(false); // Set loading state to false
+      });
+  };
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevState) => ({ ...prevState, [name]: value }));
+  };
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    setFormData({
+      ...formData,
+      Resume: file,
+    });
+  };
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const formDataToSend = new FormData();
+  for (const key in formData) {
+    if (formData[key]) {
+      formDataToSend.append(key, formData[key]);
+    }
+  }
     if (isEditMode) {
-      handleUpdateCandidates(editId);
+      handleUpdateCandidates(editId, formDataToSend);
     } else {
       try {
-        const response = await axios.post(`${appUrl}/candidates`, formData);
+        const response = await axios.post(
+          `${appUrl}/candidates`,
+          formDataToSend,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
         alert("Candidate created successfully");
         fetchCandidates();
         setFormData({
@@ -105,17 +122,24 @@ const handleChange = (e) => {
         });
         setShowForm(false);
       } catch (error) {
-        console.error("Error creating candidate:", error);
-        alert("Failed to create candidate");
+        // console.error("Error creating candidate:", error);
+        // alert("Failed to create candidate");
+        console.error("Error creating candidate:", error.response?.data || error.message);
+        alert(`Failed to create candidate: ${error.response?.data?.message || error.message}`);
       }
     }
   };
 
-  const handleUpdateCandidates = async (candidateId) => {
+  const handleUpdateCandidates = async (candidateId, formDataToSend) => {
     try {
       const response = await axios.put(
         `${appUrl}/candidates/${candidateId}`,
-        formData
+        formDataToSend,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
       );
       console.log("Candidate updated:", response.data);
       alert("Candidate updated successfully");
@@ -189,6 +213,9 @@ const handleChange = (e) => {
       setPage(newPage);
     }
   };
+  const handleDownloadResume = (filename) => {
+    window.open(`${appUrl}/candidates/resume/${filename}`, '_blank');
+  };
   return (
     <div>
       {showForm ? (
@@ -233,16 +260,23 @@ const handleChange = (e) => {
               onChange={handleChange}
               className="input-styles"
             />
-            
+
             <input
-              type="test"
+              type="file"
+              id="Resume"
+              name="Resume"
+              onChange={handleFileChange}
+              className="input-styles"
+            />
+            {/* <input
+              type="file"
               id="Resume"
               name="Resume"
               placeholder="Resume"
               value={formData.Resume}
-              onChange={handleChange}
+              onChange={handleFileChange}
               className="input-styles"
-            />
+            /> */}
             <textarea
               id="Skills"
               name="Skills"
@@ -279,7 +313,12 @@ const handleChange = (e) => {
               {/* <button type="button" onClick={handleBack} className="backButton">
                 Back
               </button> */}
-              <button onClick={() => setShowForm(false)} className="candidate-cancle-button">Cancel</button>
+              <button
+                onClick={() => setShowForm(false)}
+                className="candidate-cancle-button"
+              >
+                Cancel
+              </button>
             </div>
           </form>
         </div>
@@ -296,7 +335,10 @@ const handleChange = (e) => {
             Create Candidates
           </button>
 
-          <button onClick={ () => handleFindAllCandidates()} className="findCandidates">
+          <button
+            onClick={() => handleFindAllCandidates()}
+            className="findCandidates"
+          >
             Find All Candidates
           </button>
           <button
@@ -330,7 +372,9 @@ const handleChange = (e) => {
       {showCandidates && candidates.length > 0 && (
         <div>
           {/* <h1 className="headerCandidates">All Candidates</h1> */}
-          <h1 className="title">{isSearchActive ? "Search Results" : "All Candidates"}</h1>
+          <h1 className="title">
+            {isSearchActive ? "Search Results" : "All Candidates"}
+          </h1>
           <table className="candidate-table">
             <thead>
               <tr>
@@ -347,36 +391,39 @@ const handleChange = (e) => {
               </tr>
             </thead>
             <tbody>
-            {(isSearchActive ? searchResults : candidates).map((candidate, index) => (
-             // {candidates.map((candidate, index) => (
-                <tr key={index}>
-                  <td>{candidate.CandidateID}</td>
-                  <td>{candidate.FirstName}</td>
-                  <td>{candidate.LastName}</td>
-                  <td>{candidate.Email}</td>
-                  <td>{candidate.Phone}</td>
-                  <td>{candidate.Resume}</td>
-                  <td>{candidate.Skills}</td>
-                  <td>{candidate.Status}</td>
-                  <td>{candidate.WorkExperience}</td>
-                  <td>
-                    <button
-                      onClick={() => handleEditCandidates(candidate)}
-                      className="update-button"
-                    >
-                      Update
-                    </button>
-                    <button
-                      onClick={() =>
-                        handleDeleteCandidates(candidate.CandidateID)
-                      }
-                      className="delete-button"
-                    >
-                      Delete
-                    </button>
-                  </td>
-                </tr>
-              ))}
+              {(isSearchActive ? searchResults : candidates).map(
+                (candidate, index) => (
+                  // {candidates.map((candidate, index) => (
+                  <tr key={index}>
+                    <td>{candidate.CandidateID}</td>
+                    <td>{candidate.FirstName}</td>
+                    <td>{candidate.LastName}</td>
+                    <td>{candidate.Email}</td>
+                    <td>{candidate.Phone}</td>
+                    <td onClick={() => handleDownloadResume(candidate.Resume)} style={{ cursor: 'pointer', color: 'blue' }}>{candidate.Resume}</td>
+                    {/* <td>{candidate.Resume}</td> */}
+                    <td>{candidate.Skills}</td>
+                    <td>{candidate.Status}</td>
+                    <td>{candidate.WorkExperience}</td>
+                    <td>
+                      <button
+                        onClick={() => handleEditCandidates(candidate)}
+                        className="update-button"
+                      >
+                        Update
+                      </button>
+                      <button
+                        onClick={() =>
+                          handleDeleteCandidates(candidate.CandidateID)
+                        }
+                        className="delete-button"
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                )
+              )}
             </tbody>
           </table>
           <div>
@@ -386,7 +433,10 @@ const handleChange = (e) => {
             >
               Previous
             </button>
-            <span> Page {page} of {totalPages} </span>
+            <span>
+              {" "}
+              Page {page} of {totalPages}{" "}
+            </span>
             <button
               onClick={() => handlePageChange(page + 1)}
               disabled={page === totalPages}

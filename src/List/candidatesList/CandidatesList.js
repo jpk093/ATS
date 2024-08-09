@@ -40,6 +40,10 @@ const CandidatesList = () => {
     return <div>Loading...</div>;
   }
 
+  const handleDownloadResume = (filename) => {
+    window.open(`${appUrl}/candidates/resume/${filename}`, '_blank');
+  };
+
   return (
     <div>
       <div>
@@ -69,7 +73,8 @@ const CandidatesList = () => {
             <td>{candidate.LastName}</td>
             <td>{candidate.Email}</td>
             <td>{candidate.Phone}</td>
-            <td>{candidate.Resume}</td>
+            <td onClick={() => handleDownloadResume(candidate.Resume)} style={{ cursor: 'pointer', color: 'blue' }}>{candidate.Resume}</td>
+            {/* <td>{candidate.Resume}</td> */}
             <td>{candidate.Skills}</td>
             <td>{candidate.Status}</td>
             <td>{candidate.WorkExperience}</td>

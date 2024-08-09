@@ -29,12 +29,11 @@ const Dashboard = () =>{
     }
     return(
         <div className='dashboard-page'>
+            <button onClick={handleLogout} className='logout-page'>Logout</button>  
             <h2>Dashboard</h2>
             <div className='dashboard-links'>
-            
-                {/* <button onClick={fetchProfile}>Profile</button> */}
                 <Link to="/profile">Profile</Link>
-                <Link to="/settings">Settings</Link>
+                {/* <Link to="/settings">Settings</Link> */}
                 <Link to="/attendance">Attendance</Link>
                 <Link to="/jobs">Jobs</Link>
                 <Link to="/requisitions">Requisitions</Link>
@@ -46,7 +45,7 @@ const Dashboard = () =>{
                 <Link to="/tasks">Tasks</Link>
                 <Link to="/onboarding">Onboarding</Link>
                 
-                <button onClick={handleLogout} className='logout-page'>Logout</button>  
+                
             </div>
             <div className='dashboard-widgets'>
                 <div className='widget'>
