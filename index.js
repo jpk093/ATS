@@ -6,6 +6,8 @@ const app = express();
 const bcrypt = require("bcrypt");
 const cors = require("cors");
 const { format } = require("date-fns-tz");
+const multer = require('multer');
+const path = require('path');
 //Middleware to parse JSon bodies
 app.use(bodyParser.json());
 //Middleware to allow cross-origin requests
@@ -888,18 +890,30 @@ app.delete("/requisitions/:id", (req, res) => {
   });
 });
 
-//Create candidate endpoint
-app.post("/candidates", (req, res) => {
+// Set up multer for file uploads
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'uploads/'); // Destination folder for uploads
+  },
+  filename: function (req, file, cb) {
+    cb(null, file.originalname); // Use the original file name
+  }
+});
+const upload = multer({ storage: storage });
+
+app.post("/candidates", upload.single('Resume'), (req, res) => {
   const {
     FirstName,
     LastName,
     Email,
     Phone,
-    Resume,
+    // Resume,
     Skills,
     Status,
     WorkExperience,
   } = req.body;
+  const Resume = req.file ? req.file.originalname : null; // Use the file's name or path
+
   //Validate data
   if (!FirstName || !LastName || !Email) {
     return res
@@ -1029,18 +1043,20 @@ app.get("/candidates/search", (req, res) => {
   });
 });
 //Update candidates endpoint
-app.put("/candidates/:id", (req, res) => {
+app.put("/candidates/:id", upload.single('Resume'), (req, res) => {
   const candidateId = req.params.id;
   const {
     FirstName,
     LastName,
     Email,
     Phone,
-    Resume,
+    // Resume,
     Skills,
     Status,
     WorkExperience,
   } = req.body;
+  const Resume = req.file ? req.file.originalname : null; // Use the file's name or path
+
   // Validate data
   if (!FirstName || !LastName || !Email) {
     return res
@@ -1090,6 +1106,19 @@ app.delete("/candidates/:id", (req, res) => {
     }
     console.log("Candidate deleted successfully:", results);
     res.status(200).json({ message: "Candidate deleted successfully!" });
+  });
+});
+
+// Route to download a resume
+app.get('/candidates/resume/:filename', (req, res) => {
+  const filename = req.params.filename;
+  const filePath = path.join(__dirname, 'uploads', filename);
+
+  res.download(filePath, (err) => {
+    if (err) {
+      console.error('Error downloading file:', err);
+      res.status(404).send('File not found');
+    }
   });
 });
 
@@ -2391,6 +2420,7 @@ app.get("/employees/:employeeId", (req, res) => {
     res.status(200).json(results[0]);
   });
 });
+
 app.listen(3001, function () {
   console.log(`Server running on port 3001`);
 });
